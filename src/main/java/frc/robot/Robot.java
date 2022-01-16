@@ -10,10 +10,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+//import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Robot extends TimedRobot {
@@ -28,8 +27,8 @@ public class Robot extends TimedRobot {
   private CANSparkMax m_leftMotor2;
   private CANSparkMax m_rightMotor1;
   private CANSparkMax m_rightMotor2;
-  private MotorControllerGroup leftMotors;
-  private MotorControllerGroup rightMotors;
+  //private MotorControllerGroup leftMotors;
+  //private MotorControllerGroup rightMotors;
 
   @Override
   public void robotInit() {
@@ -51,8 +50,11 @@ public class Robot extends TimedRobot {
     m_rightMotor1 = new CANSparkMax(rightDeviceID1, MotorType.kBrushless);
     m_rightMotor2 = new CANSparkMax(rightDeviceID2, MotorType.kBrushless);
 
-    leftMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
-    rightMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
+    //leftMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
+    //rightMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
+
+    m_rightMotor2.follow(m_rightMotor1);
+    m_leftMotor2.follow(m_leftMotor1);
 
     /**
      * The RestoreFactoryDefaults method can be used to reset the configuration parameters
@@ -64,7 +66,7 @@ public class Robot extends TimedRobot {
     m_rightMotor1.restoreFactoryDefaults();
     m_rightMotor2.restoreFactoryDefaults();
 
-    m_myRobot = new DifferentialDrive(leftMotors, rightMotors);
+    m_myRobot = new DifferentialDrive(m_leftMotor1, m_rightMotor1);
 
     m_leftStick = new Joystick(0);
     m_rightStick = new Joystick(1);
