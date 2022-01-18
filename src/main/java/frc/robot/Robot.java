@@ -59,6 +59,9 @@ public class Robot extends TimedRobot {
     m_rightMotor2.follow(m_rightMotor1);
     m_leftMotor2.follow(m_leftMotor1);
 
+    m_leftMotor1.setInverted(true);
+    m_leftMotor1.setInverted(true);
+
     /**
      * The RestoreFactoryDefaults method can be used to reset the configuration parameters
      * in the SPARK MAX to their factory default state. If no argument is passed, these
