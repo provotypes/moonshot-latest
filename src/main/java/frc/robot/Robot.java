@@ -7,13 +7,19 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.util.Color;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.ColorSensorV3;
 
 public class Robot extends TimedRobot {
   private DifferentialDrive m_myRobot;
@@ -29,7 +35,43 @@ public class Robot extends TimedRobot {
   private CANSparkMax m_rightMotor2;
   //private MotorControllerGroup leftMotors;
   //private MotorControllerGroup rightMotors;
+  private final I2C.Port i2cPort = I2C.Port.kOnboard;
+  private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
+  private final ColorMatch m_colorMatcher = new ColorMatch();
 
+  private final Color kBlueTarget = new Color(0.143, 0.427, 0.429);
+  private final Color kRedTarget =  new Color(0.561, 0.232, 0.114);
+  private final Color kGreenTarget = new Color(0.197, 0.561, 0.240);
+  private final Color kYellowTarget = new Color(0.361, 0.524, 0.113);
+
+  
+  @Override
+  public void robotPeriodic() {
+      Color detectedColor = m_colorSensor.getColor();
+      double IR = m_colorSensor.getIR();
+
+      String colorString;
+      ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+
+      if (match.color == kBlueTarget) {colorString = "Blue";}
+      else if (match.color == kGreenTarget) {colorString = "Green";}
+      else if (match.color == kRedTarget) {colorString = "Red";}
+      else if (match.color == kYellowTarget) {colorString = "Yellow";}
+      else {colorString = "Unknown";}
+
+      SmartDashboard.putNumber("Red", detectedColor.red);
+      SmartDashboard.putNumber("Blue", detectedColor.blue);
+      SmartDashboard.putNumber("Green", detectedColor.green);
+      SmartDashboard.putNumber("IR", IR);
+      SmartDashboard.putNumber("Confidence", match.confidence);
+      SmartDashboard.putString("Detected Color", colorString);
+
+      int proximity = m_colorSensor.getProximity();
+
+      SmartDashboard.putNumber("Proximity", proximity);
+
+  }
+  
   @Override
   public void robotInit() {
   /**
@@ -71,6 +113,11 @@ public class Robot extends TimedRobot {
 
     m_leftStick = new Joystick(0);
     m_rightStick = new Joystick(1);
+
+    m_colorMatcher.addColorMatch(kBlueTarget);
+    m_colorMatcher.addColorMatch(kRedTarget);
+    m_colorMatcher.addColorMatch(kGreenTarget);
+    m_colorMatcher.addColorMatch(kYellowTarget);
   }
 
   @Override
