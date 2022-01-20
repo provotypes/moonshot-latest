@@ -36,7 +36,9 @@ public class Robot extends TimedRobot {
   //private MotorControllerGroup leftMotors;
   //private MotorControllerGroup rightMotors;
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
-  private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
+  private final I2C.Port expansionPort = I2C.Port.kMXP;
+  private final ColorSensorV3 m_colorSensor1 = new ColorSensorV3(i2cPort);
+  private final ColorSensorV3 m_colorSensor = new ColorSensorV3(expansionPort);
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
   private final Color kBlueTarget = new Color(0.143, 0.427, 0.429);
@@ -47,6 +49,32 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotPeriodic() {
+      Color detectedColor1 = m_colorSensor1.getColor();
+      double IR1 = m_colorSensor1.getIR();
+
+      String colorString1;
+      ColorMatchResult match1 = m_colorMatcher.matchClosestColor(detectedColor1);
+
+      if (match1.color == kBlueTarget) {colorString1 = "Blue";}
+      else if (match1.color == kGreenTarget) {colorString1 = "Green";}
+      else if (match1.color == kRedTarget) {colorString1 = "Red";}
+      else if (match1.color == kYellowTarget) {colorString1 = "Yellow";}
+      else {colorString1 = "Unknown";}
+
+      SmartDashboard.putNumber("Red1", detectedColor1.red);
+      SmartDashboard.putNumber("Blue1", detectedColor1.blue);
+      SmartDashboard.putNumber("Green1", detectedColor1.green);
+      SmartDashboard.putNumber("IR1", IR1);
+      SmartDashboard.putNumber("Confidence1", match1.confidence);
+      SmartDashboard.putString("Detected Color1", colorString1);
+
+      int proximity1 = m_colorSensor1.getProximity();
+
+      SmartDashboard.putNumber("Proximity1", proximity1);
+
+
+
+
       Color detectedColor = m_colorSensor.getColor();
       double IR = m_colorSensor.getIR();
 
