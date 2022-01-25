@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -147,10 +148,12 @@ public class Robot extends TimedRobot {
     m_colorMatcher.addColorMatch(kRedTarget);
     m_colorMatcher.addColorMatch(kGreenTarget);
     m_colorMatcher.addColorMatch(kYellowTarget);
+
+    CameraServer.startAutomaticCapture();
   }
 
   @Override
   public void teleopPeriodic() {
-    m_myRobot.arcadeDrive(-(m_leftStick.getZ() / 2), -m_leftStick.getY());
+    m_myRobot.arcadeDrive((m_leftStick.getZ() / 2), -m_leftStick.getY());
   }
 }
