@@ -9,8 +9,9 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -47,6 +48,9 @@ public class Robot extends TimedRobot {
   private final Color kRedTarget =  new Color(0.561, 0.232, 0.114);
   private final Color kGreenTarget = new Color(0.197, 0.561, 0.240);
   private final Color kYellowTarget = new Color(0.361, 0.524, 0.113);
+
+  private final Servo swivelServo = new Servo(0);
+  private final Servo tiltServo = new Servo(1);
 
   
   @Override
@@ -147,8 +151,6 @@ public class Robot extends TimedRobot {
 
     m_myRobot = new DifferentialDrive(m_leftMotor1, m_rightMotor1);
 
-    m_leftStick = new Joystick(0);
-    m_rightStick = new Joystick(1);
 
     m_colorMatcher.addColorMatch(kBlueTarget);
     m_colorMatcher.addColorMatch(kRedTarget);
@@ -163,5 +165,11 @@ public class Robot extends TimedRobot {
     m_leftStick = m_controller.getRawAxis(1);
     m_rightStick = m_controller.getRawAxis(4);
     m_myRobot.arcadeDrive((m_rightStick) / 3, -m_leftStick);
+
+    //example of a programmed position
+    if (m_controller.getAButton()) {
+      tiltServo.set(.5);
+      swivelServo.set(.5);
+    }
   }
 }
