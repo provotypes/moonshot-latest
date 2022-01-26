@@ -21,7 +21,7 @@ public class Robot extends TimedRobot {
   private DifferentialDrive m_myRobot;
   private Double m_leftStick;
   private Double m_rightStick;
-  private final XboxController m_joystick = new XboxController(0);
+  private final XboxController m_controller = new XboxController(0);
   private static final int leftDeviceID1 = 1; 
   private static final int leftDeviceID2 = 2; 
   private static final int rightDeviceID1 = 3;
@@ -56,9 +56,7 @@ public class Robot extends TimedRobot {
     //leftMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
     //rightMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
 
-    m_rightMotor2.follow(m_rightMotor1);
-    m_leftMotor2.follow(m_leftMotor1);
-
+    
     /**
      * The RestoreFactoryDefaults method can be used to reset the configuration parameters
      * in the SPARK MAX to their factory default state. If no argument is passed, these
@@ -68,14 +66,19 @@ public class Robot extends TimedRobot {
     m_leftMotor2.restoreFactoryDefaults();
     m_rightMotor1.restoreFactoryDefaults();
     m_rightMotor2.restoreFactoryDefaults();
+    
+    
+    m_rightMotor2.follow(m_rightMotor1);
+    m_leftMotor2.follow(m_leftMotor1);
+
 
     m_myRobot = new DifferentialDrive(m_leftMotor1, m_rightMotor1);
   }
 
   @Override
   public void teleopPeriodic() {
-    m_leftStick = m_joystick.getRawAxis(1);
-    m_rightStick = m_joystick.getRawAxis(2);
-    m_myRobot.tankDrive(m_leftStick, m_rightStick);
+    m_leftStick = m_controller.getRawAxis(1);
+    m_rightStick = m_controller.getRawAxis(4);
+    m_myRobot.arcadeDrive(m_rightStick, -m_leftStick);
   }
 }
