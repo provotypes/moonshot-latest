@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -46,6 +47,9 @@ public class Robot extends TimedRobot {
   private final Color kRedTarget =  new Color(0.561, 0.232, 0.114);
   private final Color kGreenTarget = new Color(0.197, 0.561, 0.240);
   private final Color kYellowTarget = new Color(0.361, 0.524, 0.113);
+
+  private final Servo swivelServo = new Servo(0);
+  private final Servo tiltServo = new Servo(1);
 
   
   @Override
@@ -154,6 +158,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    m_myRobot.arcadeDrive((m_leftStick.getZ() / 2), -m_leftStick.getY());
+
+    if (m_leftStick.getTrigger()){
+      swivelServo.set((m_leftStick.getZ() + 1) / 2);
+      tiltServo.set((m_leftStick.getY() + 1) / 2);}
+    else{
+      m_myRobot.arcadeDrive((m_leftStick.getZ() / 2), -m_leftStick.getY());
+    }
+    
   }
 }
