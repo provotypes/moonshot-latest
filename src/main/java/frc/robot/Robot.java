@@ -49,7 +49,6 @@ public class Robot extends TimedRobot {
   private final Color kGreenTarget = new Color(0.197, 0.561, 0.240);
   private final Color kYellowTarget = new Color(0.361, 0.524, 0.113);
 
-
   private final Servo swivelServo = new Servo(1);
   private final Servo tiltServo = new Servo(0);
   private double axisCameraY = 1;
