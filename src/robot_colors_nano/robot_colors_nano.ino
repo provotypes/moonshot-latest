@@ -46,7 +46,7 @@ void setup() {
 uint32_t red = strip.Color(255, 0, 0);
 uint32_t green = strip.Color(0, 255, 0);
 uint32_t blue = strip.Color(0, 0, 255);
-
+uint32_t off = strip.Color(0, 0, 0);
 
 
 
@@ -109,10 +109,12 @@ void colorAlternate(uint32_t c1, uint32_t c2, uint8_t wait=50) {
 
 void loop() {
   
-  colorSolid(green);
-  colorBlink(strip.Color(255, 0, 0), strip.Color(0, 0, 255));
+  colorSolid(blue);
+  colorBlink(red, blue);
 
-  colorAlternate(red, blue);
+  colorBlink(green, off);
+
+  colorAlternate(green, off);
 
 }
 
