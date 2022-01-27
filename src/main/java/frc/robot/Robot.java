@@ -148,12 +148,7 @@ public class Robot extends TimedRobot {
     m_leftMotor2.follow(m_leftMotor1);
 
 
-    m_rightMotor2.follow(m_rightMotor1);
-    m_leftMotor2.follow(m_leftMotor1);
-
-
     m_myRobot = new DifferentialDrive(m_leftMotor1, m_rightMotor1);
-
 
 
     m_colorMatcher.addColorMatch(kBlueTarget);
