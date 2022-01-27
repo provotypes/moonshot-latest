@@ -26,7 +26,6 @@ import com.revrobotics.ColorSensorV3;
 public class Robot extends TimedRobot {
   private DifferentialDrive m_myRobot;
   private Joystick m_leftStick;
-  private Joystick m_rightStick;
   private static final int leftDeviceID1 = 1; 
   private static final int leftDeviceID2 = 2; 
   private static final int rightDeviceID1 = 3;
@@ -48,8 +47,10 @@ public class Robot extends TimedRobot {
   private final Color kGreenTarget = new Color(0.197, 0.561, 0.240);
   private final Color kYellowTarget = new Color(0.361, 0.524, 0.113);
 
-  private final Servo swivelServo = new Servo(0);
-  private final Servo tiltServo = new Servo(1);
+  private final Servo swivelServo = new Servo(1);
+  private final Servo tiltServo = new Servo(0);
+  private double axisCameraY = 1;
+  private double axisCameraZ = 1;
 
   
   @Override
@@ -146,7 +147,6 @@ public class Robot extends TimedRobot {
     m_myRobot = new DifferentialDrive(m_leftMotor1, m_rightMotor1);
 
     m_leftStick = new Joystick(0);
-    m_rightStick = new Joystick(1);
 
     m_colorMatcher.addColorMatch(kBlueTarget);
     m_colorMatcher.addColorMatch(kRedTarget);
@@ -159,12 +159,33 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    if (m_leftStick.getTrigger()){
-      swivelServo.set((m_leftStick.getZ() + 1) / 2);
-      tiltServo.set((m_leftStick.getY() + 1) / 2);}
-    else{
-      m_myRobot.arcadeDrive((m_leftStick.getZ() / 2), -m_leftStick.getY());
-    }
+/*      swivelServo.set((m_rightStick.getY() + 1) / 2);
+      tiltServo.set((m_rightStick.getZ() + 1) / 2);
+*/ 
+      m_myRobot.arcadeDrive((m_leftStick.getZ() / 2), -m_leftStick.getY() / 2);
+
+      if (m_leftStick.getRawButton(1)) { // button X
+        axisCameraY = 0;
+        axisCameraZ = 0;
+      }
+      else if (m_leftStick.getRawButton(2)) { // button A
+        axisCameraY = 0;
+        axisCameraZ = 1;
+      }
+      else if (m_leftStick.getRawButton(3)) { // button B
+        axisCameraY = 0.5;
+        axisCameraZ = 0.5;
+      }
+      else if (m_leftStick.getRawButton(4)) { // button Y
+        axisCameraY = 1;
+        axisCameraZ = 0;
+      }
+      else{
+        swivelServo.set(axisCameraZ);
+        tiltServo.set(axisCameraY);
+
+      };
+
     
   }
 }
