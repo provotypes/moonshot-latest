@@ -29,6 +29,8 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KH
 // and minimize distance between Arduino and first pixel.  Avoid connecting
 // on a live circuit...if you must, connect GND first.
 
+
+
 void setup() {
   // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
   #if defined (__AVR_ATtiny85__)
@@ -41,33 +43,12 @@ void setup() {
   strip.show(); // Initialize all pixels to 'off'
 }
 
-void loop() {
-  
-  colorGreen();
-  colorBlink(strip.Color(255, 0, 0), strip.Color(0, 0, 255))
+uint32_t red = strip.Color(255, 0, 0);
+uint32_t green = strip.Color(0, 255, 0);
+uint32_t blue = strip.Color(0, 0, 255);
 
-}
 
-void colorRed() {
-  colorSolid(strip.Color(255, 0, 0));
-}
 
-void colorGreen() {
-  colorSolid(strip.Color(0, 255, 0));
-}
-
-void colorBlue() {
-  colorSolid(strip.Color(0, 0, 255));
-}
-
-void colorBlink(uint32_t c1, uint32_t c2 uint8_t wait=50) {
-  colorSolid(c1, 2);
-  colorSolid(c2, 2);
-  colorSolid(c1, 2);
-  colorSolid(c2, 2);
-  colorSolid(c1, 2);
-  colorSolid(c2, 2);
-}
 
 void colorSolid(uint32_t c, uint8_t wait=50) {
   for(uint16_t i=0; i<strip.numPixels(); i++) {
@@ -75,6 +56,64 @@ void colorSolid(uint32_t c, uint8_t wait=50) {
   }
   strip.show();
   delay(wait);
+}
+
+void colorBlink(uint32_t c1, uint32_t c2, uint8_t wait=50) {
+  colorSolid(c1, 2);
+  colorSolid(c2, 2);
+  colorSolid(c1, 2);
+  colorSolid(c2, 2);
+  colorSolid(c1, 2);
+  colorSolid(c2, 2);
+}
+
+void colorAlternate(uint32_t c1, uint32_t c2, uint8_t wait=50) {
+  byte m = 0;
+  byte p = 0;
+
+  for (uint16_t i=0; i<strip.numPixels(); i++) {
+    switch (m) {
+      case 0: {
+        m = 1;
+        switch (p) {
+          case 0: {
+            strip.setPixelColor(i, c1);
+            p = 1;
+            break;
+          }
+          case 1: {
+            strip.setPixelColor(i, c2);
+            p = 0;
+            break;
+          }
+        }
+      }
+      case 1: {
+        m = 0;
+        switch (p) {
+          case 0: {
+            strip.setPixelColor(i, c2);
+            p = 1;
+            break;
+          }
+          case 1: {
+            strip.setPixelColor(i, c1);
+            p = 0;
+            break;
+          }
+        }
+      }
+    }
+  }
+}
+
+void loop() {
+  
+  colorSolid(green);
+  colorBlink(strip.Color(255, 0, 0), strip.Color(0, 0, 255));
+
+  colorAlternate(red, blue);
+
 }
 
 // Fill the dots one after the other with a color
