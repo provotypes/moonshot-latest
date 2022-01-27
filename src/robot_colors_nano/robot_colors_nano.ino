@@ -43,20 +43,38 @@ void setup() {
 
 void loop() {
   
-  // Some example procedures showing how to display to the pixels:
-  colorWipe(strip.Color(255, 0,   0  ), 10); // Red
-  colorWipe(strip.Color(0,   255, 0  ), 10); // Green
-  colorWipe(strip.Color(0,   0,   255), 10); // Blue
-//colorWipe(strip.Color(0,   0,   0  ), 10); // White RGBW
+  colorGreen();
+  colorBlink(strip.Color(255, 0, 0), strip.Color(0, 0, 255))
 
-  // Send a theater pixel chase in...
-  theaterChase(strip.Color(127, 127, 127), 10); // White
-  theaterChase(strip.Color(127, 0,   0  ), 10); // Red
-  theaterChase(strip.Color(0,   0,   127), 10); // Blue
+}
 
-  rainbow(20);
-  rainbowCycle(20);
-  theaterChaseRainbow(50);
+void colorRed() {
+  colorSolid(strip.Color(255, 0, 0));
+}
+
+void colorGreen() {
+  colorSolid(strip.Color(0, 255, 0));
+}
+
+void colorBlue() {
+  colorSolid(strip.Color(0, 0, 255));
+}
+
+void colorBlink(uint32_t c1, uint32_t c2 uint8_t wait=50) {
+  colorSolid(c1, 2);
+  colorSolid(c2, 2);
+  colorSolid(c1, 2);
+  colorSolid(c2, 2);
+  colorSolid(c1, 2);
+  colorSolid(c2, 2);
+}
+
+void colorSolid(uint32_t c, uint8_t wait=50) {
+  for(uint16_t i=0; i<strip.numPixels(); i++) {
+    strip.setPixelColor(i, c);
+  }
+  strip.show();
+  delay(wait);
 }
 
 // Fill the dots one after the other with a color

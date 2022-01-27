@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.util.Color;
 
 import com.revrobotics.CANSparkMax;
@@ -28,6 +27,7 @@ public class Robot extends TimedRobot {
   private Double m_leftStick;
   private Double m_rightStick;
   private final XboxController m_controller = new XboxController(0);
+
   private static final int leftDeviceID1 = 1; 
   private static final int leftDeviceID2 = 2; 
   private static final int rightDeviceID1 = 3;
@@ -49,8 +49,11 @@ public class Robot extends TimedRobot {
   private final Color kGreenTarget = new Color(0.197, 0.561, 0.240);
   private final Color kYellowTarget = new Color(0.361, 0.524, 0.113);
 
-  private final Servo swivelServo = new Servo(0);
-  private final Servo tiltServo = new Servo(1);
+
+  private final Servo swivelServo = new Servo(1);
+  private final Servo tiltServo = new Servo(0);
+  private double axisCameraY = 1;
+  private double axisCameraZ = 1;
 
   
   @Override
@@ -152,6 +155,7 @@ public class Robot extends TimedRobot {
     m_myRobot = new DifferentialDrive(m_leftMotor1, m_rightMotor1);
 
 
+
     m_colorMatcher.addColorMatch(kBlueTarget);
     m_colorMatcher.addColorMatch(kRedTarget);
     m_colorMatcher.addColorMatch(kGreenTarget);
@@ -166,10 +170,33 @@ public class Robot extends TimedRobot {
     m_rightStick = m_controller.getRawAxis(4);
     m_myRobot.arcadeDrive((m_rightStick) / 3, -m_leftStick);
 
-    //example of a programmed position
-    if (m_controller.getAButton()) {
-      tiltServo.set(.5);
-      swivelServo.set(.5);
-    }
+/*      swivelServo.set((m_rightStick.getY() + 1) / 2);
+      tiltServo.set((m_rightStick.getZ() + 1) / 2);
+*/
+
+      if (m_controller.getXButton()) { // button X
+        axisCameraY = 0;
+        axisCameraZ = 0;
+      }
+      else if (m_controller.getAButton()) { // button A
+        axisCameraY = 0;
+        axisCameraZ = 1;
+      }
+      else if (m_controller.getBButton()) { // button B
+        axisCameraY = 0.5;
+        axisCameraZ = 0.5;
+      }
+      else if (m_controller.getYButton()) { // button Y
+        axisCameraY = 1;
+        axisCameraZ = 0;
+      }
+      else{
+        swivelServo.set(axisCameraZ);
+        tiltServo.set(axisCameraY);
+
+      };
+
+    
+
   }
 }
