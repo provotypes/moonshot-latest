@@ -74,7 +74,7 @@ void colorBlink(uint32_t c1, uint32_t c2, uint8_t wait=100) {
 void colorAlternate(uint32_t c1, uint32_t c2, uint8_t wait=100) {
   byte m = 0;
   byte p = 0;
-  for (uint16_t j=0; j<2; j++) {
+  for (uint16_t j=0; j<8; j++) {
     for (uint16_t i=0; i<strip.numPixels(); i++) {
       if (m==0) {
         if (p==0) {
@@ -118,16 +118,30 @@ void rainbowCycle(uint8_t wait) {
 }
 
 
-uint8_t state = 10;
-uint8_t mode = 0;
-
+uint8_t state = 1;
+uint8_t mode = 1;
+unsigned long duration = 0;
 
 void loop() {
+
+  // state setting
+  duration = pulseIn(2, HIGH);
+  Serial.println(duration);
+  if (int(duration) <= 25 && int(duration) >= 15) {
+    state = 3;
+  } else if (int(duration) <= 50 && int(duration) >= 40) {
+    state = 1;
+  } else {
+    state = 0;
+  }
 
   switch (mode) {
     case 0: {
       // colorSolid(off, 0);
-      unsigned long duration = pulseIn(2, HIGH, 100);
+      if (state == 1) {
+        strip.setPixelColor(min(int(duration), 29), off);
+      }
+      duration = pulseIn(2, HIGH);
       Serial.println(duration);
       strip.setPixelColor(min(int(duration), 29), green);
       strip.show();
