@@ -23,6 +23,26 @@ import com.revrobotics.ColorMatchResult;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3;
 
+/*************************************
+ * 
+ *************************************/
+
+import edu.wpi.first.wpilibj.Joystick;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import edu.wpi.first.wpilibj.TimedRobot;
+
+/**
+ * This sample program shows how to control a motor using a joystick. In the
+ * operator control part of the program, the joystick is read and the value is
+ * written to the motor.
+ *
+ * <p>Joystick analog values range from -1 to 1 and speed controller inputs also
+ * range from -1 to 1 making it easy to work together.
+ */
+
 public class Robot extends TimedRobot {
   private DifferentialDrive m_myRobot;
   private Joystick m_leftStick;
@@ -52,6 +72,16 @@ public class Robot extends TimedRobot {
   private double axisCameraY = 1;
   private double axisCameraZ = 1;
 
+  /********************
+   * falcon 500
+   */
+  private static final int kMotorPort = 04;
+  private static final int kJoystickPort = 0;
+
+  private TalonFX talon04;
+  private Joystick m_joystick;
+
+  /******************************* */
   
   @Override
   public void robotPeriodic() {
@@ -105,7 +135,7 @@ public class Robot extends TimedRobot {
       SmartDashboard.putNumber("Proximity", proximity);
 
   }
-  
+
   @Override
   public void robotInit() {
   /**
@@ -121,6 +151,7 @@ public class Robot extends TimedRobot {
    * The example below initializes four brushless motors with CAN IDs 1 and 2. Change
    * these parameters to match your setup
    */
+  
     m_leftMotor1 = new CANSparkMax(leftDeviceID1, MotorType.kBrushless);
     m_leftMotor2 = new CANSparkMax(leftDeviceID2, MotorType.kBrushless);
     m_rightMotor1 = new CANSparkMax(rightDeviceID1, MotorType.kBrushless);
@@ -135,6 +166,7 @@ public class Robot extends TimedRobot {
      * in the SPARK MAX to their factory default state. If no argument is passed, these
      * parameters will not persist between power cycles
      */
+
     m_leftMotor1.restoreFactoryDefaults();
     m_leftMotor2.restoreFactoryDefaults();
     m_rightMotor1.restoreFactoryDefaults();
@@ -154,6 +186,14 @@ public class Robot extends TimedRobot {
     m_colorMatcher.addColorMatch(kYellowTarget);
 
     CameraServer.startAutomaticCapture();
+
+    /*****************************
+     * falcon 500 code
+     */
+    talon04 = new TalonFX(kMotorPort);
+    
+    m_joystick = new Joystick(kJoystickPort);
+    /********************************** */
   }
 
   @Override
@@ -162,7 +202,8 @@ public class Robot extends TimedRobot {
 /*      swivelServo.set((m_rightStick.getY() + 1) / 2);
       tiltServo.set((m_rightStick.getZ() + 1) / 2);
 */ 
-      m_myRobot.arcadeDrive((m_leftStick.getZ() / 2), -m_leftStick.getY() / 2);
+
+     /* m_myRobot.arcadeDrive((m_leftStick.getZ() / 2), -m_leftStick.getY() / 2); *******************************/
 
       if (m_leftStick.getRawButton(1)) { // button X
         axisCameraY = 0;
@@ -185,7 +226,11 @@ public class Robot extends TimedRobot {
         tiltServo.set(axisCameraY);
 
       };
-
+      /*********************
+       * falcon 500 again
+       */
+        talon04.set(TalonFXControlMode.PercentOutput, m_joystick.getY());
+      /****************************** */
     
+    }
   }
-}
