@@ -42,7 +42,6 @@ void setup() {
   strip.setBrightness(50);
   strip.show(); // Initialize all pixels to 'off'
 
-  pinMode(0, INPUT);
   Serial.begin(9600);
 }
 
@@ -121,6 +120,7 @@ void rainbowCycle(uint8_t wait) {
 uint8_t state = 1;
 uint8_t mode = 1;
 unsigned long duration = 0;
+// solder wire to arduino port D2!
 
 void loop() {
 
