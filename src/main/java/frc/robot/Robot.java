@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -15,7 +16,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
@@ -53,6 +53,7 @@ public class Robot extends TimedRobot {
   private final Servo tiltServo = new Servo(0);
   private double axisCameraY = 1;
   private double axisCameraZ = 1;
+  private final DigitalOutput lightStrip = new DigitalOutput(0);
 
   
   @Override
@@ -156,6 +157,9 @@ public class Robot extends TimedRobot {
     m_colorMatcher.addColorMatch(kYellowTarget);
 
     CameraServer.startAutomaticCapture();
+
+    lightStrip.enablePWM(.2);
+    lightStrip.setPWMRate(400);
   }
 
   @Override
@@ -168,28 +172,32 @@ public class Robot extends TimedRobot {
       tiltServo.set((m_rightStick.getZ() + 1) / 2);
 */
 
-      if (m_controller.getXButton()) { // button X
-        axisCameraY = 0;
-        axisCameraZ = 0;
-      }
-      else if (m_controller.getAButton()) { // button A
-        axisCameraY = 0;
-        axisCameraZ = 1;
-      }
-      else if (m_controller.getBButton()) { // button B
-        axisCameraY = 0.5;
-        axisCameraZ = 0.5;
-      }
-      else if (m_controller.getYButton()) { // button Y
-        axisCameraY = 1;
-        axisCameraZ = 0;
-      }
-      else{
-        swivelServo.set(axisCameraZ);
-        tiltServo.set(axisCameraY);
+    if (m_controller.getXButton()) { // button X
+      axisCameraY = 0;
+      axisCameraZ = 0;
+      lightStrip.setPWMRate(200);
+    }
+    else if (m_controller.getAButton()) { // button A
+      axisCameraY = 0;
+      axisCameraZ = 1;
+      lightStrip.setPWMRate(400);
+    }
+    else if (m_controller.getBButton()) { // button B
+      axisCameraY = 0.5;
+      axisCameraZ = 0.5;
+      lightStrip.setPWMRate(600);
+    }
+    else if (m_controller.getYButton()) { // button Y
+      axisCameraY = 1;
+      axisCameraZ = 0;
+      lightStrip.setPWMRate(100);
+    }
+    else{
+      swivelServo.set(axisCameraZ);
+      tiltServo.set(axisCameraY);
 
-      };
-
+    };
+      
     
 
   }
