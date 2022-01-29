@@ -119,37 +119,45 @@ void rainbowCycle(uint8_t wait) {
 
 
 uint8_t state = 10;
-
+uint8_t mode = 0;
 
 
 void loop() {
 
-  if (state == 0) {
-    colorAlternate(green, off);
-  } else if (state == 1) {
-    colorBlink(red, off);
-  } else if (state == 2) {
-    colorBlink(green, off);
-  } else if (state == 3) {
-    colorBlink(blue, off);
-  } else if (state == 4) {
-    colorBlink(yellow, off);
-  } else if (state == 5) {
-    colorSolid(red);
-  } else if (state == 6) {
-    colorSolid(green);
-  } else if (state == 7) {
-    colorSolid(blue);
-  } else if (state == 8) {
-    colorSolid(yellow);
-  } else if (state == 9) {
-    rainbow(50);
-  } else if (state == 10) { // I/O testing
-    int duration = pulseIn(0, HIGH);
-    Serial.println(duration/100);
-    strip.setPixelColor(duration, green);
-    strip.show();
-
+  switch (mode) {
+    case 0: {
+      // colorSolid(off, 0);
+      unsigned long duration = pulseIn(2, HIGH, 100);
+      Serial.println(duration);
+      strip.setPixelColor(min(int(duration), 29), green);
+      strip.show();
+      break;
+    }
+    case 1: {
+      if (state == 0) {
+        colorAlternate(green, off);
+      } else if (state == 1) {
+        colorBlink(red, off);
+      } else if (state == 2) {
+        colorBlink(green, off);
+      } else if (state == 3) {
+        colorBlink(blue, off);
+      } else if (state == 4) {
+        colorBlink(yellow, off);
+      } else if (state == 5) {
+        colorSolid(red);
+      } else if (state == 6) {
+        colorSolid(green);
+      } else if (state == 7) {
+        colorSolid(blue);
+      } else if (state == 8) {
+        colorSolid(yellow);
+      } else if (state == 9) {
+        rainbow(50);
+      } else if (state == 10) {
+        colorAlternate(blue, red);
+      }
+    }
   }
 }
 
