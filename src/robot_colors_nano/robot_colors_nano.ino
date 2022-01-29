@@ -47,6 +47,7 @@ uint32_t red = strip.Color(255, 0, 0);
 uint32_t green = strip.Color(0, 255, 0);
 uint32_t blue = strip.Color(0, 0, 255);
 uint32_t off = strip.Color(0, 0, 0);
+uint32_t yellow = strip.Color(255, 255, 0);
 
 
 
@@ -58,64 +59,87 @@ void colorSolid(uint32_t c, uint8_t wait=50) {
   delay(wait);
 }
 
-void colorBlink(uint32_t c1, uint32_t c2, uint8_t wait=50) {
-  colorSolid(c1, 2);
-  colorSolid(c2, 2);
-  colorSolid(c1, 2);
-  colorSolid(c2, 2);
-  colorSolid(c1, 2);
-  colorSolid(c2, 2);
+void colorBlink(uint32_t c1, uint32_t c2, uint8_t wait=100) {
+  colorSolid(c1, wait);
+  colorSolid(c2, wait);
+  colorSolid(c1, wait);
+  colorSolid(c2, wait);
+  colorSolid(c1, wait);
+  colorSolid(c2, wait);
 }
 
-void colorAlternate(uint32_t c1, uint32_t c2, uint8_t wait=50) {
+void colorAlternate(uint32_t c1, uint32_t c2, uint8_t wait=100) {
   byte m = 0;
   byte p = 0;
-
-  for (uint16_t i=0; i<strip.numPixels(); i++) {
-    switch (m) {
-      case 0: {
-        m = 1;
-        switch (p) {
-          case 0: {
-            strip.setPixelColor(i, c1);
-            p = 1;
-            break;
-          }
-          case 1: {
-            strip.setPixelColor(i, c2);
-            p = 0;
-            break;
-          }
+  for (uint16_t j=0; j<2; j++) {
+    for (uint16_t i=0; i<strip.numPixels(); i++) {
+      if (m==0) {
+        if (p==0) {
+          p = 1;
+          strip.setPixelColor(i, c1);
+        } else {
+          p = 0;
+          strip.setPixelColor(i, c2);
         }
-      }
-      case 1: {
-        m = 0;
-        switch (p) {
-          case 0: {
-            strip.setPixelColor(i, c2);
-            p = 1;
-            break;
-          }
-          case 1: {
-            strip.setPixelColor(i, c1);
-            p = 0;
-            break;
-          }
+      } else {
+        if (p==0) {
+          p = 1;
+          strip.setPixelColor(i, c2);
+        } else {
+          p = 0;
+          strip.setPixelColor(i, c1);
         }
       }
     }
+    if (m == 0) {
+      m = 1;
+    } else {
+      m = 0;
+    }
+    strip.show();
+    delay(50);
   }
 }
 
+// Slightly different, this makes the rainbow equally distributed throughout
+void rainbowCycle(uint8_t wait) {
+  uint16_t i, j;
+
+  for(j=0; j<256*5; j++) { // 5 cycles of all colors on wheel
+    for(i=0; i< strip.numPixels(); i++) {
+      strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
+    }
+    strip.show();
+    delay(wait);
+  }
+}
+
+
+uint8_t state = 9;
+
 void loop() {
-  
-  colorSolid(blue);
-  colorBlink(red, blue);
 
-  colorBlink(green, off);
-
-  colorAlternate(green, off);
-
+  if (state == 0) {
+    colorAlternate(green, off);
+  } else if (state == 1) {
+    colorBlink(red, off);
+  } else if (state == 2) {
+    colorBlink(green, off);
+  } else if (state == 3) {
+    colorBlink(blue, off);
+  } else if (state == 4) {
+    colorBlink(yellow, off);
+  } else if (state == 5) {
+    colorSolid(red);
+  } else if (state == 6) {
+    colorSolid(green);
+  } else if (state == 7) {
+    colorSolid(blue);
+  } else if (state == 8) {
+    colorSolid(yellow);
+  } else if (state == 9) {
+    rainbow(50);
+  }
 }
 
 // Fill the dots one after the other with a color
@@ -139,18 +163,7 @@ void rainbow(uint8_t wait) {
   }
 }
 
-// Slightly different, this makes the rainbow equally distributed throughout
-void rainbowCycle(uint8_t wait) {
-  uint16_t i, j;
 
-  for(j=0; j<256*5; j++) { // 5 cycles of all colors on wheel
-    for(i=0; i< strip.numPixels(); i++) {
-      strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
-    }
-    strip.show();
-    delay(wait);
-  }
-}
 
 //Theatre-style crawling lights.
 void theaterChase(uint32_t c, uint8_t wait) {
