@@ -9,12 +9,11 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.util.Color;
 
 import com.revrobotics.CANSparkMax;
@@ -25,7 +24,10 @@ import com.revrobotics.ColorSensorV3;
 
 public class Robot extends TimedRobot {
   private DifferentialDrive m_myRobot;
-  private Joystick m_leftStick;
+  private Double m_leftStick;
+  private Double m_rightStick;
+  private final XboxController m_controller = new XboxController(0);
+
   private static final int leftDeviceID1 = 1; 
   private static final int leftDeviceID2 = 2; 
   private static final int rightDeviceID1 = 3;
@@ -129,7 +131,7 @@ public class Robot extends TimedRobot {
     //leftMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
     //rightMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
 
-
+    
     /**
      * The RestoreFactoryDefaults method can be used to reset the configuration parameters
      * in the SPARK MAX to their factory default state. If no argument is passed, these
@@ -139,14 +141,14 @@ public class Robot extends TimedRobot {
     m_leftMotor2.restoreFactoryDefaults();
     m_rightMotor1.restoreFactoryDefaults();
     m_rightMotor2.restoreFactoryDefaults();
-
+    
+    
     m_rightMotor2.follow(m_rightMotor1);
     m_leftMotor2.follow(m_leftMotor1);
 
 
     m_myRobot = new DifferentialDrive(m_leftMotor1, m_rightMotor1);
 
-    m_leftStick = new Joystick(0);
 
     m_colorMatcher.addColorMatch(kBlueTarget);
     m_colorMatcher.addColorMatch(kRedTarget);
@@ -158,25 +160,27 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    m_leftStick = m_controller.getRawAxis(1);
+    m_rightStick = m_controller.getRawAxis(4);
+    m_myRobot.arcadeDrive((m_rightStick) / 3, -m_leftStick);
 
 /*      swivelServo.set((m_rightStick.getY() + 1) / 2);
       tiltServo.set((m_rightStick.getZ() + 1) / 2);
-*/ 
-      m_myRobot.arcadeDrive((m_leftStick.getZ() / 2), -m_leftStick.getY() / 2);
+*/
 
-      if (m_leftStick.getRawButton(1)) { // button X
+      if (m_controller.getXButton()) { // button X
         axisCameraY = 0;
         axisCameraZ = 0;
       }
-      else if (m_leftStick.getRawButton(2)) { // button A
+      else if (m_controller.getAButton()) { // button A
         axisCameraY = 0;
         axisCameraZ = 1;
       }
-      else if (m_leftStick.getRawButton(3)) { // button B
+      else if (m_controller.getBButton()) { // button B
         axisCameraY = 0.5;
         axisCameraZ = 0.5;
       }
-      else if (m_leftStick.getRawButton(4)) { // button Y
+      else if (m_controller.getYButton()) { // button Y
         axisCameraY = 1;
         axisCameraZ = 0;
       }
@@ -187,5 +191,6 @@ public class Robot extends TimedRobot {
       };
 
     
+
   }
 }
