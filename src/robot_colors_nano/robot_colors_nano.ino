@@ -41,6 +41,9 @@ void setup() {
   strip.begin();
   strip.setBrightness(50);
   strip.show(); // Initialize all pixels to 'off'
+
+  pinMode(0, INPUT);
+  Serial.begin(9600);
 }
 
 uint32_t red = strip.Color(255, 0, 0);
@@ -115,7 +118,9 @@ void rainbowCycle(uint8_t wait) {
 }
 
 
-uint8_t state = 9;
+uint8_t state = 10;
+
+
 
 void loop() {
 
@@ -139,6 +144,12 @@ void loop() {
     colorSolid(yellow);
   } else if (state == 9) {
     rainbow(50);
+  } else if (state == 10) { // I/O testing
+    int duration = pulseIn(0, HIGH);
+    Serial.println(duration);
+    strip.setPixelColor(duration, green);
+    strip.show();
+
   }
 }
 
