@@ -146,7 +146,7 @@ void loop() {
     rainbow(50);
   } else if (state == 10) { // I/O testing
     int duration = pulseIn(0, HIGH);
-    Serial.println(duration);
+    Serial.println(duration/100);
     strip.setPixelColor(duration, green);
     strip.show();
 
