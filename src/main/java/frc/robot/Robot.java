@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
@@ -53,6 +54,8 @@ public class Robot extends TimedRobot {
   private final Servo tiltServo = new Servo(0);
   private double axisCameraY = 1;
   private double axisCameraZ = 1;
+
+  private AHRS gyro;
 
   
   @Override
@@ -156,6 +159,7 @@ public class Robot extends TimedRobot {
     m_colorMatcher.addColorMatch(kYellowTarget);
 
     CameraServer.startAutomaticCapture();
+    AHRS gyro = new AHRS(SPI.Port.kMXP);
   }
 
   @Override
