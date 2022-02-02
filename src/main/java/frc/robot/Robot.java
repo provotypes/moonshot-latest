@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -57,6 +58,16 @@ public class Robot extends TimedRobot {
 
   private AHRS gyro;
 
+  PIDController turnController;
+  double rotateToAngleRate;
+  boolean turnControllerEnabled = false;
+  static final double kP = 0.03;
+  static final double kI = 0.00;
+  static final double kD = 0.00;
+  static final double kF = 0.00;
+  static final double kToleranceDegrees = 2.0f;
+
+  static final double kTargetAngleDegrees = 90.0f;
   
   @Override
   public void robotPeriodic() {
@@ -164,9 +175,57 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    m_leftStick = m_controller.getRawAxis(1);
-    m_rightStick = m_controller.getRawAxis(4);
-    m_myRobot.arcadeDrive((m_rightStick) / 3, -m_leftStick);
+    
+    if (m_controller.getRawButton(0)) {
+      /*
+       * While this button is held down, rotate to target angle. Since a Tank drive
+       * system cannot move forward simultaneously while rotating, all joystick input
+       * is ignored until this button is released.
+       */
+      if (!turnControllerEnabled) {
+        turnController.setSetpoint(kTargetAngleDegrees);
+        rotateToAngleRate = 0; // This value will be updated by the PID Controller
+        turnControllerEnabled = true;
+      }
+      rotateToAngleRate = MathUtil.clamp(turnController.calculate(ahrs.getAngle()), -1.0, 1.0);
+      double leftStickValue = rotateToAngleRate;
+      double rightStickValue = rotateToAngleRate;
+      myRobot.tankDrive(leftStickValue, rightStickValue);
+    } else if (m_controller.getRawButton(1)) {
+      /*
+       * "Zero" the yaw (whatever direction the sensor is pointing now will become the
+       * new "Zero" degrees.
+       */
+      ahrs.zeroYaw();
+    } else if (m_controller.getRawButton(2)) {
+      /*
+       * While this button is held down, the robot is in "drive straight" mode.
+       * Whatever direction the robot was heading when "drive straight" mode was
+       * entered will be maintained. The average speed of both joysticks is the
+       * magnitude of motion.
+       */
+      if (!turnControllerEnabled) {
+        // Acquire current yaw angle, using this as the target angle.
+        turnController.setSetpoint(ahrs.getYaw());
+        rotateToAngleRate = 0; // This value will be updated by the PID Controller
+        turnControllerEnabled = true;
+      }
+      rotateToAngleRate = MathUtil.clamp(turnController.calculate(ahrs.getAngle()), -1.0, 1.0);
+      double magnitude = (m_controller.getLeftY() + m_controller.getRightY()) / 2;
+      double leftStickValue = magnitude + rotateToAngleRate;
+      double rightStickValue = magnitude - rotateToAngleRate;
+      myRobot.tankDrive(leftStickValue, rightStickValue);
+    } else {
+      /* If the turn controller had been enabled, disable it now. */
+      if (turnControllerEnabled) {
+        turnControllerEnabled = false;
+      }
+      /* Standard tank drive, no driver assistance. */
+     
+    
+      m_leftStick = m_controller.getRawAxis(1);
+      m_rightStick = m_controller.getRawAxis(4);
+      m_myRobot.arcadeDrive((m_rightStick) / 3, -m_leftStick);}
 
 /*      swivelServo.set((m_rightStick.getY() + 1) / 2);
       tiltServo.set((m_rightStick.getZ() + 1) / 2);
@@ -193,7 +252,7 @@ public class Robot extends TimedRobot {
         tiltServo.set(axisCameraY);
 
       };
-
+      gyro.
     
 
   }
