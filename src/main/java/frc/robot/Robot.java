@@ -32,22 +32,19 @@ public class Robot extends TimedRobot {
   private static final int leftDeviceID2 = 2; 
   private static final int rightDeviceID1 = 3;
   private static final int rightDeviceID2 = 4;
-  /***************************************************** */
   private static final int protoID5 = 5;
   private static final int protoID6 = 6;
   private static final int protoID7 = 7;
   private static final int protoID8 = 8;
-  /***************************************************** */
+
   private CANSparkMax m_leftMotor1;
   private CANSparkMax m_leftMotor2;
   private CANSparkMax m_rightMotor1;
   private CANSparkMax m_rightMotor2;
-  /***************************************************** */
   private CANSparkMax m_protoMotor5;
   private CANSparkMax m_protoMotor6;
   private CANSparkMax m_protoMotor7;
   private CANSparkMax m_protoMotor8;
-  /***************************************************** */
   //private MotorControllerGroup leftMotors;
   //private MotorControllerGroup rightMotors;
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
@@ -143,12 +140,10 @@ public class Robot extends TimedRobot {
     //leftMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
     //rightMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
 
-    /***************************************************** */
     m_protoMotor5 = new CANSparkMax(protoID5, MotorType.kBrushed);
     m_protoMotor6 = new CANSparkMax(protoID6, MotorType.kBrushed);
     m_protoMotor7 = new CANSparkMax(protoID7, MotorType.kBrushed);
     m_protoMotor8 = new CANSparkMax(protoID8, MotorType.kBrushed);
-    /***************************************************** */
     
     /**
      * The RestoreFactoryDefaults method can be used to reset the configuration parameters
@@ -187,9 +182,7 @@ public class Robot extends TimedRobot {
     m_rightStick = m_controller.getRawAxis(4);
     m_myRobot.arcadeDrive((m_rightStick) / 3, -m_leftStick);
 
-/*      swivelServo.set((m_rightStick.getY() + 1) / 2);
-      tiltServo.set((m_rightStick.getZ() + 1) / 2);
-*/
+
 
       if (m_controller.getPOV() == 0) { // up button
         axisCameraY = 0.5;
@@ -214,7 +207,6 @@ public class Robot extends TimedRobot {
       };
 
 
-      /***************************************************** */
       if (m_controller.getXButton()){
         m_protoMotor5.set(.5);
       }
@@ -239,8 +231,6 @@ public class Robot extends TimedRobot {
       else{
         m_protoMotor8.set(0);
       };
-
-      /***************************************************** */
 
     
 
