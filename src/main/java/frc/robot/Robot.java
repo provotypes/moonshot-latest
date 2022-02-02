@@ -36,8 +36,6 @@ public class Robot extends TimedRobot {
   private CANSparkMax m_leftMotor2;
   private CANSparkMax m_rightMotor1;
   private CANSparkMax m_rightMotor2;
-  //private MotorControllerGroup leftMotors;
-  //private MotorControllerGroup rightMotors;
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final I2C.Port expansionPort = I2C.Port.kMXP;
   private final ColorSensorV3 m_colorSensor1 = new ColorSensorV3(i2cPort);
@@ -53,6 +51,7 @@ public class Robot extends TimedRobot {
   private final Servo tiltServo = new Servo(0);
   private double axisCameraY = 1;
   private double axisCameraZ = 1;
+  private double rampRate = .3;
 
   
   @Override
@@ -110,42 +109,26 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotInit() {
-  /**
-   * SPARK MAX controllers are intialized over CAN by constructing a CANSparkMax object
-   * 
-   * The CAN ID, which can be configured using the SPARK MAX Client, is passed as the
-   * first parameter
-   * 
-   * The motor type is passed as the second parameter. Motor type can either be:
-   *  com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless
-   *  com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushed
-   * 
-   * The example below initializes four brushless motors with CAN IDs 1 and 2. Change
-   * these parameters to match your setup
-   */
     m_leftMotor1 = new CANSparkMax(leftDeviceID1, MotorType.kBrushless);
     m_leftMotor2 = new CANSparkMax(leftDeviceID2, MotorType.kBrushless);
     m_rightMotor1 = new CANSparkMax(rightDeviceID1, MotorType.kBrushless);
     m_rightMotor2 = new CANSparkMax(rightDeviceID2, MotorType.kBrushless);
 
-    //leftMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
-    //rightMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
-
-    
-    /**
-     * The RestoreFactoryDefaults method can be used to reset the configuration parameters
-     * in the SPARK MAX to their factory default state. If no argument is passed, these
-     * parameters will not persist between power cycles
-     */
     m_leftMotor1.restoreFactoryDefaults();
     m_leftMotor2.restoreFactoryDefaults();
     m_rightMotor1.restoreFactoryDefaults();
     m_rightMotor2.restoreFactoryDefaults();
-    
+
+    m_leftMotor1.setInverted(true);
+    m_leftMotor2.setInverted(true);
     
     m_rightMotor2.follow(m_rightMotor1);
     m_leftMotor2.follow(m_leftMotor1);
 
+    m_leftMotor1.setOpenLoopRampRate(rampRate);
+    m_leftMotor2.setOpenLoopRampRate(rampRate);
+    m_rightMotor1.setOpenLoopRampRate(rampRate);
+    m_rightMotor2.setOpenLoopRampRate(rampRate);
 
     m_myRobot = new DifferentialDrive(m_leftMotor1, m_rightMotor1);
 
@@ -160,13 +143,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    m_leftStick = m_controller.getRawAxis(1);
-    m_rightStick = m_controller.getRawAxis(4);
-    m_myRobot.arcadeDrive((m_rightStick) / 3, -m_leftStick);
+    m_leftStick = m_controller.getLeftY();
+    m_rightStick = m_controller.getRightX();
+    m_myRobot.arcadeDrive(m_leftStick, -(m_rightStick / 2));
 
-/*      swivelServo.set((m_rightStick.getY() + 1) / 2);
-      tiltServo.set((m_rightStick.getZ() + 1) / 2);
-*/
 
       if (m_controller.getXButton()) { // button X
         axisCameraY = 0;
@@ -187,9 +167,7 @@ public class Robot extends TimedRobot {
       else{
         swivelServo.set(axisCameraZ);
         tiltServo.set(axisCameraY);
-
       };
-
     
 
   }
