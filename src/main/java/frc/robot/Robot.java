@@ -32,10 +32,22 @@ public class Robot extends TimedRobot {
   private static final int leftDeviceID2 = 2; 
   private static final int rightDeviceID1 = 3;
   private static final int rightDeviceID2 = 4;
+  /***************************************************** */
+  private static final int protoID5 = 5;
+  private static final int protoID6 = 6;
+  private static final int protoID7 = 7;
+  private static final int protoID8 = 8;
+  /***************************************************** */
   private CANSparkMax m_leftMotor1;
   private CANSparkMax m_leftMotor2;
   private CANSparkMax m_rightMotor1;
   private CANSparkMax m_rightMotor2;
+  /***************************************************** */
+  private CANSparkMax m_protoMotor5;
+  private CANSparkMax m_protoMotor6;
+  private CANSparkMax m_protoMotor7;
+  private CANSparkMax m_protoMotor8;
+  /***************************************************** */
   //private MotorControllerGroup leftMotors;
   //private MotorControllerGroup rightMotors;
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
@@ -131,6 +143,12 @@ public class Robot extends TimedRobot {
     //leftMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
     //rightMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
 
+    /***************************************************** */
+    m_protoMotor5 = new CANSparkMax(protoID5, MotorType.kBrushed);
+    m_protoMotor6 = new CANSparkMax(protoID6, MotorType.kBrushed);
+    m_protoMotor7 = new CANSparkMax(protoID7, MotorType.kBrushed);
+    m_protoMotor8 = new CANSparkMax(protoID8, MotorType.kBrushed);
+    /***************************************************** */
     
     /**
      * The RestoreFactoryDefaults method can be used to reset the configuration parameters
@@ -145,6 +163,11 @@ public class Robot extends TimedRobot {
     
     m_rightMotor2.follow(m_rightMotor1);
     m_leftMotor2.follow(m_leftMotor1);
+
+    m_protoMotor5.setOpenLoopRampRate(1);
+    m_protoMotor6.setOpenLoopRampRate(1);
+    m_protoMotor7.setOpenLoopRampRate(1);
+    m_protoMotor8.setOpenLoopRampRate(1);
 
 
     m_myRobot = new DifferentialDrive(m_leftMotor1, m_rightMotor1);
@@ -168,19 +191,19 @@ public class Robot extends TimedRobot {
       tiltServo.set((m_rightStick.getZ() + 1) / 2);
 */
 
-      if (m_controller.getXButton()) { // button X
-        axisCameraY = 0;
-        axisCameraZ = 0;
-      }
-      else if (m_controller.getAButton()) { // button A
-        axisCameraY = 0;
-        axisCameraZ = 1;
-      }
-      else if (m_controller.getBButton()) { // button B
+      if (m_controller.getPOV() == 0) { // up button
         axisCameraY = 0.5;
         axisCameraZ = 0.5;
       }
-      else if (m_controller.getYButton()) { // button Y
+      else if (m_controller.getPOV() == 180) { // down button
+        axisCameraY = 0.5;
+        axisCameraZ = 0.5;
+      }
+      else if (m_controller.getPOV() == 270) { // left button
+        axisCameraY = 0;
+        axisCameraZ = 1;
+      }
+      else if (m_controller.getPOV() == 90) { // right button
         axisCameraY = 1;
         axisCameraZ = 0;
       }
@@ -189,6 +212,35 @@ public class Robot extends TimedRobot {
         tiltServo.set(axisCameraY);
 
       };
+
+
+      /***************************************************** */
+      if (m_controller.getXButton()){
+        m_protoMotor5.set(.5);
+      }
+      else{
+        m_protoMotor5.set(0);
+      };
+      if (m_controller.getBButton()){
+        m_protoMotor6.set(.5);
+      }
+      else{
+        m_protoMotor6.set(0);
+      };
+      if (m_controller.getYButton()){
+        m_protoMotor7.set(.5);
+      }
+      else{
+        m_protoMotor7.set(0);
+      };
+      if (m_controller.getAButton()){
+        m_protoMotor8.set(.5);
+      }
+      else{
+        m_protoMotor8.set(0);
+      };
+
+      /***************************************************** */
 
     
 
