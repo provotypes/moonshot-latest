@@ -150,6 +150,12 @@ void check_analog() {
   uint16_t value = analogRead(2);
 
   Serial.println(value);
+
+  if (0 <= value && value <= 22) {}
+  else if (24 <= value && value <= 42) {}
+  else if (44 <= value && value <= 62) {}
+  else if (64 <= value && value <= 82) {}
+
 }
 
 
