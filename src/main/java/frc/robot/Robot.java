@@ -69,7 +69,7 @@ public class Robot extends TimedRobot {
   static final double kF = 0.00;
   static final double kToleranceDegrees = 2.0f;
 
-  static final double kTargetAngleDegrees = 90.0f;
+  static final double kTargetAngleDegrees = 0.0f;
   float yawF = 0;
   double yawD = 0;
   
@@ -213,9 +213,7 @@ public class Robot extends TimedRobot {
        */
       if (!turnControllerEnabled) {
         // Acquire current yaw angle, using this as the target angle.
-        yawF = gyro.getYaw();
-        yawD = yawF;
-        turnController.setSetpoint(yawF);
+        turnController.setSetpoint(gyro.getYaw());
         rotateToAngleRate = 0; // This value will be updated by the PID Controller
         turnControllerEnabled = true;
       }
