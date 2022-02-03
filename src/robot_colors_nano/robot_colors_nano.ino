@@ -151,11 +151,21 @@ void check_analog() {
 
   Serial.println(value);
 
-  if (0 <= value && value <= 22) {}
-  else if (24 <= value && value <= 42) {}
-  else if (44 <= value && value <= 62) {}
-  else if (64 <= value && value <= 82) {}
-
+  if (0 <= value && value <= 22) { state = 0; }
+  else if (24 <= value && value <= 42) { state = 1; }
+  else if (44 <= value && value <= 62) { state = 2; }
+  else if (64 <= value && value <= 82) { state = 3; }
+  else if (84 <= value && value <= 102) { state = 4; }
+  else if (104 <= value && value <= 122) { state = 5; }
+  else if (124 <= value && value <= 142) { state = 6; }
+  else if (144 <= value && value <= 162) { state = 7; }
+  else if (164 <= value && value <= 182) { state = 8; }
+  else if (184 <= value && value <= 202) { state = 9; }
+  else if (204 <= value && value <= 222) { state = 10; }
+  else if (224 <= value && value <= 242) { state = 11; }
+  else if (244 <= value && value <= 262) {}
+  else if (264 <= value && value <= 282) {}
+  else if (284 <= value && value <= 302) {}
 }
 
 
