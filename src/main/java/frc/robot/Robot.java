@@ -8,7 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.AnalogOutput;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -53,7 +53,9 @@ public class Robot extends TimedRobot {
   private final Servo tiltServo = new Servo(0);
   private double axisCameraY = 1;
   private double axisCameraZ = 1;
-  private final DigitalOutput lightStrip = new DigitalOutput(0);
+  private final AnalogOutput lightStrip = new AnalogOutput(getChannelFromPin(PinType.AnalogOut, 0));
+  private double voltage = 0;
+  private int timer = 0;
 
   
   @Override
@@ -158,8 +160,7 @@ public class Robot extends TimedRobot {
 
     CameraServer.startAutomaticCapture();
 
-    lightStrip.enablePWM(.2);
-    lightStrip.setPWMRate(400);
+
   }
 
   @Override
@@ -171,34 +172,90 @@ public class Robot extends TimedRobot {
 /*      swivelServo.set((m_rightStick.getY() + 1) / 2);
       tiltServo.set((m_rightStick.getZ() + 1) / 2);
 */
-
     if (m_controller.getXButton()) { // button X
       axisCameraY = 0;
       axisCameraZ = 0;
-      lightStrip.setPWMRate(200);
     }
     else if (m_controller.getAButton()) { // button A
       axisCameraY = 0;
       axisCameraZ = 1;
-      lightStrip.setPWMRate(400);
     }
     else if (m_controller.getBButton()) { // button B
       axisCameraY = 0.5;
       axisCameraZ = 0.5;
-      lightStrip.setPWMRate(600);
     }
     else if (m_controller.getYButton()) { // button Y
       axisCameraY = 1;
       axisCameraZ = 0;
-      lightStrip.setPWMRate(100);
     }
     else{
       swivelServo.set(axisCameraZ);
       tiltServo.set(axisCameraY);
-
     };
-      
+    //lightStrip.setVoltage((m_controller.getLeftTriggerAxis() * 5));
+    lightStrip.setVoltage(voltage);
+    if (timer <= 30) {
+      timer += 1;
+    } else {
+      timer = 0;
+      if (voltage < 5) {
+        voltage += .5;} else {
+          voltage = 0;
+        }
+    }
+
+    
+  };
+
+  public enum PinType {
+      DigitalIO, PWM, AnalogIn, AnalogOut
+  };
+
+  public final int MAX_NAVX_MXP_DIGIO_PIN_NUMBER = 9;
+  public final int MAX_NAVX_MXP_ANALOGIN_PIN_NUMBER = 3;
+  public final int MAX_NAVX_MXP_ANALOGOUT_PIN_NUMBER = 1;
+  public final int NUM_ROBORIO_ONBOARD_DIGIO_PINS = 10;
+  public final int NUM_ROBORIO_ONBOARD_PWM_PINS = 10;
+  public final int NUM_ROBORIO_ONBOARD_ANALOGIN_PINS = 4;
+
+  /* getChannelFromPin( PinType, int ) - converts from a navX MXP */
+  /* Pin type and number to the corresponding RoboRIO Channel */
+  /* Number, which is used by the WPI Library functions. */
+
+  public int getChannelFromPin(PinType type, int io_pin_number) throws IllegalArgumentException {
+      int roborio_channel = 0;
+      if (io_pin_number < 0) {
+          throw new IllegalArgumentException("Error:  navX MXP I/O Pin #");
+      }
+      switch (type) {
+      case DigitalIO:
+          if (io_pin_number > MAX_NAVX_MXP_DIGIO_PIN_NUMBER) {
+              throw new IllegalArgumentException("Error:  Invalid navX MXP Digital I/O Pin #");
+          }
+          roborio_channel = io_pin_number + NUM_ROBORIO_ONBOARD_DIGIO_PINS + (io_pin_number > 3 ? 4 : 0);
+          break;
+      case PWM:
+          if (io_pin_number > MAX_NAVX_MXP_DIGIO_PIN_NUMBER) {
+              throw new IllegalArgumentException("Error:  Invalid navX MXP Digital I/O Pin #");
+          }
+          roborio_channel = io_pin_number + NUM_ROBORIO_ONBOARD_PWM_PINS;
+          break;
+      case AnalogIn:
+          if (io_pin_number > MAX_NAVX_MXP_ANALOGIN_PIN_NUMBER) {
+              throw new IllegalArgumentException("Error:  Invalid navX MXP Analog Input Pin #");
+          }
+          roborio_channel = io_pin_number + NUM_ROBORIO_ONBOARD_ANALOGIN_PINS;
+          break;
+      case AnalogOut:
+          if (io_pin_number > MAX_NAVX_MXP_ANALOGOUT_PIN_NUMBER) {
+              throw new IllegalArgumentException("Error:  Invalid navX MXP Analog Output Pin #");
+          }
+          roborio_channel = io_pin_number;
+          break;
+      }
+      return roborio_channel;
+  }
     
 
   }
-}
+
