@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Servo;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.SPI;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
@@ -56,9 +58,9 @@ public class Robot extends TimedRobot {
   private double axisCameraY = 1;
   private double axisCameraZ = 1;
 
-  private AHRS gyro;
+  AHRS gyro;
 
-  PIDController turnController;
+  private PIDController turnController;
   double rotateToAngleRate;
   boolean turnControllerEnabled = false;
   static final double kP = 0.03;
@@ -68,6 +70,8 @@ public class Robot extends TimedRobot {
   static final double kToleranceDegrees = 2.0f;
 
   static final double kTargetAngleDegrees = 90.0f;
+  float yawF = 0;
+  double yawD = 0;
   
   @Override
   public void robotPeriodic() {
@@ -170,13 +174,16 @@ public class Robot extends TimedRobot {
     m_colorMatcher.addColorMatch(kYellowTarget);
 
     CameraServer.startAutomaticCapture();
-    AHRS gyro = new AHRS(SPI.Port.kMXP);
+    gyro = new AHRS(SPI.Port.kMXP);
+    turnController = new PIDController(kP, kI, kD);
+    turnController.enableContinuousInput(-180.0f, 180.0f);
+
   }
 
   @Override
   public void teleopPeriodic() {
     
-    if (m_controller.getRawButton(0)) {
+    if (m_controller.getLeftBumper()) {
       /*
        * While this button is held down, rotate to target angle. Since a Tank drive
        * system cannot move forward simultaneously while rotating, all joystick input
@@ -187,17 +194,17 @@ public class Robot extends TimedRobot {
         rotateToAngleRate = 0; // This value will be updated by the PID Controller
         turnControllerEnabled = true;
       }
-      rotateToAngleRate = MathUtil.clamp(turnController.calculate(ahrs.getAngle()), -1.0, 1.0);
+      rotateToAngleRate = (MathUtil.clamp(turnController.calculate(gyro.getAngle()), -1.0, 1.0) / 2);
       double leftStickValue = rotateToAngleRate;
       double rightStickValue = rotateToAngleRate;
-      myRobot.tankDrive(leftStickValue, rightStickValue);
-    } else if (m_controller.getRawButton(1)) {
+      m_myRobot.tankDrive(leftStickValue, rightStickValue);
+    } else if (m_controller.getRightBumper()) {
       /*
        * "Zero" the yaw (whatever direction the sensor is pointing now will become the
        * new "Zero" degrees.
        */
-      ahrs.zeroYaw();
-    } else if (m_controller.getRawButton(2)) {
+      gyro.zeroYaw();
+    } else if (m_controller.getStartButton()) {
       /*
        * While this button is held down, the robot is in "drive straight" mode.
        * Whatever direction the robot was heading when "drive straight" mode was
@@ -206,15 +213,17 @@ public class Robot extends TimedRobot {
        */
       if (!turnControllerEnabled) {
         // Acquire current yaw angle, using this as the target angle.
-        turnController.setSetpoint(ahrs.getYaw());
+        yawF = gyro.getYaw();
+        yawD = yawF;
+        turnController.setSetpoint(yawF);
         rotateToAngleRate = 0; // This value will be updated by the PID Controller
         turnControllerEnabled = true;
       }
-      rotateToAngleRate = MathUtil.clamp(turnController.calculate(ahrs.getAngle()), -1.0, 1.0);
+      rotateToAngleRate = MathUtil.clamp(turnController.calculate(gyro.getAngle()), -1.0, 1.0);
       double magnitude = (m_controller.getLeftY() + m_controller.getRightY()) / 2;
       double leftStickValue = magnitude + rotateToAngleRate;
       double rightStickValue = magnitude - rotateToAngleRate;
-      myRobot.tankDrive(leftStickValue, rightStickValue);
+      m_myRobot.tankDrive(leftStickValue, rightStickValue);
     } else {
       /* If the turn controller had been enabled, disable it now. */
       if (turnControllerEnabled) {
@@ -252,7 +261,6 @@ public class Robot extends TimedRobot {
         tiltServo.set(axisCameraY);
 
       };
-      gyro.
     
 
   }
