@@ -124,14 +124,13 @@ void rainbowCycle(uint8_t wait) {
 }
 
 
-uint8_t state = 1;
+uint8_t state = 0;
 uint8_t mode = 1;
+uint8_t analog = 1;
 unsigned long duration = 0;
 // solder wire to arduino port D2!
 
-void loop() {
-
-  // state setting
+void check_digital() {
   duration = pulseIn(2, HIGH);
   Serial.println(duration);
   if (int(duration) <= 25 && int(duration) >= 15) {
@@ -144,6 +143,25 @@ void loop() {
     state = 4;
   } else {
     state = 0;
+  }
+}
+
+void check_analog() {
+  uint16_t value = analogRead(2);
+
+  Serial.println(value);
+}
+
+
+
+void loop() {
+
+
+  // state setting
+  if (analog == 0) {
+    check_digital();
+  } else {
+    check_analog();
   }
 
   switch (mode) {
