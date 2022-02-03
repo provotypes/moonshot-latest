@@ -46,15 +46,19 @@ void setup() {
 }
 
 uint32_t red = strip.Color(255, 0, 0);
+uint32_t orange = strip.Color(255, 127, 0);
+uint32_t yellow = strip.Color(255, 255, 0);
 uint32_t green = strip.Color(0, 255, 0);
 uint32_t blue = strip.Color(0, 0, 255);
 uint32_t off = strip.Color(0, 0, 0);
-uint32_t yellow = strip.Color(255, 255, 0);
-
+uint8_t powerLvl = 0;
 
 
 void colorSolid(uint32_t c, uint8_t wait=50) {
-  for(uint16_t i=0; i<strip.numPixels(); i++) {
+  if (powerLvl == 1) {
+    strip.setPixelColor(0, orange);
+  }
+  for(uint16_t i=powerLvl; i<strip.numPixels(); i++) {
     strip.setPixelColor(i, c);
   }
   strip.show();
@@ -70,11 +74,14 @@ void colorBlink(uint32_t c1, uint32_t c2, uint8_t wait=100) {
   colorSolid(c2, wait);
 }
 
-void colorAlternate(uint32_t c1, uint32_t c2, uint8_t wait=100) {
+void colorAlternate(uint32_t c1, uint32_t c2) {
   byte m = 0;
   byte p = 0;
   for (uint16_t j=0; j<8; j++) {
-    for (uint16_t i=0; i<strip.numPixels(); i++) {
+    if (powerLvl == 1) {
+      strip.setPixelColor(0, orange);
+    }
+    for (uint16_t i=powerLvl; i<strip.numPixels(); i++) {
       if (m==0) {
         if (p==0) {
           p = 1;
@@ -128,9 +135,13 @@ void loop() {
   duration = pulseIn(2, HIGH);
   Serial.println(duration);
   if (int(duration) <= 25 && int(duration) >= 15) {
-    state = 3;
-  } else if (int(duration) <= 50 && int(duration) >= 40) {
     state = 1;
+  } else if (int(duration) <= 50 && int(duration) >= 40) {
+    state = 2;
+  } else if (int(duration) <= 100 && int(duration) >= 90) {
+    state = 3;
+  } else if (int(duration) <= 200 && int(duration) >= 190) {
+    state = 4;
   } else {
     state = 0;
   }
@@ -139,11 +150,11 @@ void loop() {
     case 0: {
       // colorSolid(off, 0);
       if (state == 1) {
-        strip.setPixelColor(min(int(duration), 29), off);
+        strip.setPixelColor(min(int(duration), strip.numPixels() - 1), off);
       }
       duration = pulseIn(2, HIGH);
       Serial.println(duration);
-      strip.setPixelColor(min(int(duration), 29), green);
+      strip.setPixelColor(min(int(duration), strip.numPixels() - 1), green);
       strip.show();
       break;
     }
@@ -151,11 +162,11 @@ void loop() {
       if (state == 0) {
         colorAlternate(green, off);
       } else if (state == 1) {
-        colorBlink(red, off);
-      } else if (state == 2) {
-        colorBlink(green, off);
-      } else if (state == 3) {
         colorBlink(blue, off);
+      } else if (state == 2) {
+        colorBlink(red, off);
+      } else if (state == 3) {
+        colorBlink(green, off);
       } else if (state == 4) {
         colorBlink(yellow, off);
       } else if (state == 5) {
