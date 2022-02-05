@@ -73,23 +73,20 @@ public class Robot extends TimedRobot {
    * 
    *********************************************/
   public void setMotorSpeed(double speed) {
-    if (speed > 0) {
-        if (toplimitSwitch.get()) {
-            // We are going up and top limit is tripped so stop
-            m_protoMotor6.set(0);
-        } else {
-            // We are going up but top limit is not tripped so go at commanded speed
-            m_protoMotor6.set(speed);
+    if(m_controller.getBButton()) {
+        if (speed > 0) {
+            if (toplimitSwitch.get()) {
+                // We are going up and top limit is tripped so stop
+                m_protoMotor6.set(0);
+            } else {
+                // We are going up but top limit is not tripped so go at commanded speed
+                m_protoMotor6.set(speed);
+            }
         }
-    } else {
-        if (bottomlimitSwitch.get()) {
-            // We are going down and bottom limit is tripped so stop
-            m_protoMotor6.set(0);
-        } else {
-            // We are going down but bottom limit is not tripped so go at commanded speed
-            m_protoMotor6.set(speed);
-        }
-    }
+      }
+      else {
+        m_protoMotor6.set(0);
+      }
 }
 /*
 if (m_controller.getBButton())
@@ -278,8 +275,6 @@ else{
 
     
   }
-}
     
 
-  }
 }
