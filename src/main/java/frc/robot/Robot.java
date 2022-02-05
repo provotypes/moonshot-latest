@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.DigitalInput;
+
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
@@ -63,7 +66,39 @@ public class Robot extends TimedRobot {
   private double axisCameraY = 1;
   private double axisCameraZ = 1;
 
-  
+  private final DigitalInput toplimitSwitch = new DigitalInput(2);
+  private final DigitalInput bottomlimitSwitch = new DigitalInput(3);
+
+  /*********************************************
+   * 
+   *********************************************/
+  public void setMotorSpeed(double speed) {
+    if (speed > 0) {
+        if (toplimitSwitch.get()) {
+            // We are going up and top limit is tripped so stop
+            m_protoMotor6.set(0);
+        } else {
+            // We are going up but top limit is not tripped so go at commanded speed
+            m_protoMotor6.set(speed);
+        }
+    } else {
+        if (bottomlimitSwitch.get()) {
+            // We are going down and bottom limit is tripped so stop
+            m_protoMotor6.set(0);
+        } else {
+            // We are going down but bottom limit is not tripped so go at commanded speed
+            m_protoMotor6.set(speed);
+        }
+    }
+}
+/*
+if (m_controller.getBButton())
+{
+  m_protoMotor6.set(.5);
+}
+else{
+  m_protoMotor6.set(0);
+};*/
   @Override
   public void robotPeriodic() {
       Color detectedColor1 = m_colorSensor1.getColor();
@@ -89,7 +124,11 @@ public class Robot extends TimedRobot {
 
       SmartDashboard.putNumber("Proximity1", proximity1);
 
+    ///////////////////////////////////////////
 
+    setMotorSpeed(0.25);
+
+    /////////////////////////////////////////////////
 
 
       Color detectedColor = m_colorSensor.getColor();
@@ -132,6 +171,8 @@ public class Robot extends TimedRobot {
    * The example below initializes four brushless motors with CAN IDs 1 and 2. Change
    * these parameters to match your setup
    */
+
+
     m_leftMotor1 = new CANSparkMax(leftDeviceID1, MotorType.kBrushless);
     m_leftMotor2 = new CANSparkMax(leftDeviceID2, MotorType.kBrushless);
     m_rightMotor1 = new CANSparkMax(rightDeviceID1, MotorType.kBrushless);
@@ -139,6 +180,7 @@ public class Robot extends TimedRobot {
 
     //leftMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
     //rightMotors = new MotorControllerGroup(m_leftMotor1, m_leftMotor2);
+
 
     m_protoMotor5 = new CANSparkMax(protoID5, MotorType.kBrushed);
     m_protoMotor6 = new CANSparkMax(protoID6, MotorType.kBrushed);
@@ -213,18 +255,20 @@ public class Robot extends TimedRobot {
       else{
         m_protoMotor5.set(0);
       };
-      if (m_controller.getBButton()){
-        m_protoMotor6.set(.5);
-      }
-      else{
-        m_protoMotor6.set(0);
-      };
-      if (m_controller.getYButton()){
+
+
+ 
+
+
+      if (m_controller.getYButton())
+      {
         m_protoMotor7.set(.5);
       }
       else{
         m_protoMotor7.set(0);
       };
+
+
       if (m_controller.getAButton()){
         m_protoMotor8.set(.5);
       }
@@ -232,6 +276,9 @@ public class Robot extends TimedRobot {
         m_protoMotor8.set(0);
       };
 
+    
+  }
+}
     
 
   }
