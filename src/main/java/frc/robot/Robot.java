@@ -175,34 +175,38 @@ public class Robot extends TimedRobot {
     if (m_controller.getXButton()) { // button X
       axisCameraY = 0;
       axisCameraZ = 0;
+      voltage = 1;
     }
     else if (m_controller.getAButton()) { // button A
       axisCameraY = 0;
       axisCameraZ = 1;
+      voltage = 2;
     }
     else if (m_controller.getBButton()) { // button B
       axisCameraY = 0.5;
       axisCameraZ = 0.5;
+      voltage = 3;
     }
     else if (m_controller.getYButton()) { // button Y
       axisCameraY = 1;
       axisCameraZ = 0;
+      voltage = 4;
     }
     else{
-      swivelServo.set(axisCameraZ);
-      tiltServo.set(axisCameraY);
+      //swivelServo.set(axisCameraZ);
+      //tiltServo.set(axisCameraY);
     };
     //lightStrip.setVoltage((m_controller.getLeftTriggerAxis() * 5));
     lightStrip.setVoltage(voltage);
-    if (timer <= 30) {
-      timer += 1;
-    } else {
-      timer = 0;
-      if (voltage < 5) {
-        voltage += .5;} else {
-          voltage = 0;
-        }
-    }
+    // if (timer <= 30) {
+    //   timer += 1;
+    // } else {
+    //   timer = 0;
+    //   if (voltage < 5) {
+    //     voltage += .5;} else {
+    //       voltage = 0;
+    //     }
+    // }
 
     
   };
