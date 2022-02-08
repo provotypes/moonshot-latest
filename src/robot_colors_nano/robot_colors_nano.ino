@@ -123,14 +123,41 @@ void rainbowCycle(uint8_t wait) {
   }
 }
 
+//Theatre-style crawling lights with rainbow effect
+void theaterChaseRainbow(uint8_t wait) {
+  for (int j=0; j < 256; j++) {     // cycle all 256 colors in the wheel
+    for (int q=0; q < 3; q++) {
+      for (uint16_t i=0; i < strip.numPixels(); i=i+3) {
+        strip.setPixelColor(i+q, Wheel( (i+j) % 255));    //turn every third pixel on
+      }
+      strip.show();
+
+      delay(wait);
+
+      for (uint16_t i=0; i < strip.numPixels(); i=i+3) {
+        strip.setPixelColor(i+q, 0);        //turn every third pixel off
+      }
+    }
+  }
+}
+
+void randomized(uint8_t r, uint8_t g, uint8_t b, uint8_t range) {
+  for (uint8_t i = 0; i <= strip.numPixels(); i++) {
+    uint8_t _r = max(min(0, random(r - range, r + range)), 255);
+    uint8_t _g = max(min(0, random(g - range, g + range)), 255);
+    uint8_t _b = max(min(0, random(g - range, g + range)), 255);
+    strip.setPixelColor(i, strip.Color(_r, _g, _b));
+  }
+}
 
 uint8_t state = 0;
 uint8_t mode = 1;
 uint8_t analog = 1;
 unsigned long duration = 0;
-// solder wire to arduino port D2!
+// solder wire to arduino port A2!
 
 void check_digital() {
+
   duration = pulseIn(2, HIGH);
   Serial.println(duration);
   if (int(duration) <= 25 && int(duration) >= 15) {
@@ -151,21 +178,22 @@ void check_analog() {
 
   Serial.println(value);
 
-  if (0 <= value && value <= 22) { state = 0; }
-  else if (24 <= value && value <= 42) { state = 1; }
-  else if (44 <= value && value <= 62) { state = 2; }
-  else if (64 <= value && value <= 82) { state = 3; }
-  else if (84 <= value && value <= 102) { state = 4; }
-  else if (104 <= value && value <= 122) { state = 5; }
-  else if (124 <= value && value <= 142) { state = 6; }
-  else if (144 <= value && value <= 162) { state = 7; }
-  else if (164 <= value && value <= 182) { state = 8; }
-  else if (184 <= value && value <= 202) { state = 9; }
-  else if (204 <= value && value <= 222) { state = 10; }
-  else if (224 <= value && value <= 242) { state = 11; }
-  else if (244 <= value && value <= 262) {}
-  else if (264 <= value && value <= 282) {}
-  else if (284 <= value && value <= 302) {}
+  uint8_t v = 26;
+  if (0 <= value && value <= v) { state = 0; }
+  else if ((v)+2 <= value && value <= v*2) { state = 1; }
+  else if ((v*2)+2 <= value && value <= v*3) { state = 2; }
+  else if ((v*3)+2 <= value && value <= v*4) { state = 3; }
+  else if ((v*4)+2 <= value && value <= v*5) { state = 4; }
+  else if ((v*5)+2 <= value && value <= v*6) { state = 5; }
+  else if ((v*6)+2 <= value && value <= v*7) { state = 6; }
+  else if ((v*7)+2 <= value && value <= v*8) { state = 7; }
+  else if ((v*8)+2 <= value && value <= v*9) { state = 8; }
+  else if ((v*9)+2 <= value && value <= v*10) { state = 9; }
+  else if ((v*10)+2 <= value && value <= v*11) { state = 10; }
+  else if ((v*11)+2 <= value && value <= v*12) { state = 11; }
+  else if ((v*12)+2 <= value && value <= v*13) { state = 12; }
+  else if ((v*13)+2 <= value && value <= v*14) { state = 13; }
+  else if ((v*14)+2 <= value && value <= v*15) { state = 14; }
 }
 
 
@@ -193,28 +221,22 @@ void loop() {
       break;
     }
     case 1: {
-      if (state == 0) {
-        colorAlternate(green, off);
-      } else if (state == 1) {
-        colorBlink(blue, off);
-      } else if (state == 2) {
-        colorBlink(red, off);
-      } else if (state == 3) {
-        colorBlink(green, off);
-      } else if (state == 4) {
-        colorBlink(yellow, off);
-      } else if (state == 5) {
-        colorSolid(red);
-      } else if (state == 6) {
-        colorSolid(green);
-      } else if (state == 7) {
-        colorSolid(blue);
-      } else if (state == 8) {
-        colorSolid(yellow);
-      } else if (state == 9) {
-        rainbow(50);
-      } else if (state == 10) {
-        colorAlternate(blue, red);
+      switch (state) {
+        case 0:  { colorAlternate(green, off); break; }
+        case 1:  { colorAlternate(red, off); break; }
+        case 2:  { colorAlternate(blue, off); break; }
+        case 3:  { colorAlternate(yellow, off); break; }
+        case 4:  { colorBlink(green, off); break; }
+        case 5:  { colorBlink(red, off); break; }
+        case 6:  { colorBlink(blue, off); break; }
+        case 7:  { colorBlink(yellow, off); break; }
+        case 8:  { colorSolid(green); break; }
+        case 9:  { colorSolid(red); break; }
+        case 10: { colorSolid(blue); break; }
+        case 11: { colorSolid(yellow); break; }
+        case 12: { colorAlternate(blue, green); break; }
+        case 13: { colorAlternate(blue, red); break; }
+        case 14: { colorAlternate(green, red); break; }
       }
     }
   }
@@ -261,23 +283,7 @@ void theaterChase(uint32_t c, uint8_t wait) {
   }
 }
 
-//Theatre-style crawling lights with rainbow effect
-void theaterChaseRainbow(uint8_t wait) {
-  for (int j=0; j < 256; j++) {     // cycle all 256 colors in the wheel
-    for (int q=0; q < 3; q++) {
-      for (uint16_t i=0; i < strip.numPixels(); i=i+3) {
-        strip.setPixelColor(i+q, Wheel( (i+j) % 255));    //turn every third pixel on
-      }
-      strip.show();
 
-      delay(wait);
-
-      for (uint16_t i=0; i < strip.numPixels(); i=i+3) {
-        strip.setPixelColor(i+q, 0);        //turn every third pixel off
-      }
-    }
-  }
-}
 
 // Input a value 0 to 255 to get a color value.
 // The colours are a transition r - g - b - back to r.
