@@ -194,6 +194,7 @@ void check_analog() {
   else if ((v*12)+2 <= value && value <= v*13) { state = 12; }
   else if ((v*13)+2 <= value && value <= v*14) { state = 13; }
   else if ((v*14)+2 <= value && value <= v*15) { state = 14; }
+  else if ((v*15)+2 <= value && value <= v*16) { state = 15; }
 }
 
 
@@ -237,6 +238,7 @@ void loop() {
         case 12: { colorAlternate(blue, green); break; }
         case 13: { colorAlternate(blue, red); break; }
         case 14: { colorAlternate(green, red); break; }
+        case 15: { randomized(0, 255, 20, 20); }
       }
     }
   }
