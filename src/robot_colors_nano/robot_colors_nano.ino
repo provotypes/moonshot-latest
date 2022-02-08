@@ -143,11 +143,21 @@ void theaterChaseRainbow(uint8_t wait) {
 
 void randomized(uint8_t r, uint8_t g, uint8_t b, uint8_t range) {
   for (uint8_t i = 0; i <= strip.numPixels(); i++) {
-    uint8_t _r = max(min(0, random(r - range, r + range)), 255);
-    uint8_t _g = max(min(0, random(g - range, g + range)), 255);
-    uint8_t _b = max(min(0, random(g - range, g + range)), 255);
+    uint8_t _r = 0;
+    uint8_t _g = 0;
+    uint8_t _b = 0;
+    if (r != 0) {
+      _r = min(max(0, random(r - range, r + range)), 255);
+    }
+    if (g != 0) {
+      _g = min(max(0, random(g - range, g + range)), 255);
+    }
+    if (b != 0) {
+      _b = min(max(0, random(g - range, g + range)), 255);
+    }
     strip.setPixelColor(i, strip.Color(_r, _g, _b));
   }
+  strip.show();
 }
 
 uint8_t state = 0;
@@ -238,7 +248,7 @@ void loop() {
         case 12: { colorAlternate(blue, green); break; }
         case 13: { colorAlternate(blue, red); break; }
         case 14: { colorAlternate(green, red); break; }
-        case 15: { randomized(0, 255, 20, 20); }
+        case 15: { randomized(0, 245, 1, 10); }
       }
     }
   }
