@@ -29,7 +29,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KH
 // and minimize distance between Arduino and first pixel.  Avoid connecting
 // on a live circuit...if you must, connect GND first.
 
-
+uint8_t brightness = 75;
 
 void setup() {
   // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
@@ -39,7 +39,7 @@ void setup() {
   // End of trinket special code
 
   strip.begin();
-  strip.setBrightness(50);
+  strip.setBrightness(brightness);
   strip.show(); // Initialize all pixels to 'off'
 
   Serial.begin(9600);
@@ -146,16 +146,17 @@ void randomized(uint8_t r, uint8_t g, uint8_t b, uint8_t range) {
     uint8_t _r = 0;
     uint8_t _g = 0;
     uint8_t _b = 0;
-    if (r != 0) {
-      _r = min(max(0, random(r - range, r + range)), 255);
-    }
-    if (g != 0) {
-      _g = min(max(0, random(g - range, g + range)), 255);
-    }
-    if (b != 0) {
-      _b = min(max(0, random(g - range, g + range)), 255);
-    }
+    //if (r != 0) {
+    _r = min(max(0, random(r - range, r + range)), 255);
+    //}
+    //if (g != 0) {
+    _g = min(max(0, random(g - range, g + range)), 255);
+    //}
+    //if (b != 0) {
+    _b = min(max(0, random(g - range, g + range)), 255);
+    //}
     strip.setPixelColor(i, strip.Color(_r, _g, _b));
+    //strip.setBrightness(min(max(0, random(brightness - range, brightness + range)), 255));
   }
   strip.show();
 }
@@ -248,7 +249,7 @@ void loop() {
         case 12: { colorAlternate(blue, green); break; }
         case 13: { colorAlternate(blue, red); break; }
         case 14: { colorAlternate(green, red); break; }
-        case 15: { randomized(0, 245, 1, 10); }
+        case 15: { randomized(-5, 250, 0, 5); }
       }
     }
   }
