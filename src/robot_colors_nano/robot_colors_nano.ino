@@ -53,10 +53,7 @@ uint32_t blue = strip.Color(0, 0, 255);
 uint32_t off = strip.Color(0, 0, 0);
 
 void colorSolid(uint32_t c, uint8_t wait=50) {
-  if (powerLvl == 1) {
-    strip.setPixelColor(0, orange);
-  }
-  for(uint16_t i=powerLvl; i<strip.numPixels(); i++) {
+  for(uint16_t i=0; i<strip.numPixels(); i++) {
     strip.setPixelColor(i, c);
   }
   strip.show();
@@ -76,10 +73,7 @@ void colorAlternate(uint32_t c1, uint32_t c2) {
   byte m = 0;
   byte p = 0;
   for (uint16_t j=0; j<8; j++) {
-    if (powerLvl == 1) {
-      strip.setPixelColor(0, orange);
-    }
-    for (uint16_t i=powerLvl; i<strip.numPixels(); i++) {
+    for (uint16_t i=0; i<strip.numPixels(); i++) {
       if (m==0) {
         if (p==0) {
           p = 1;
