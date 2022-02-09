@@ -51,8 +51,6 @@ uint32_t yellow = strip.Color(255, 255, 0);
 uint32_t green = strip.Color(0, 255, 0);
 uint32_t blue = strip.Color(0, 0, 255);
 uint32_t off = strip.Color(0, 0, 0);
-uint8_t powerLvl = 0;
-
 
 void colorSolid(uint32_t c, uint8_t wait=50) {
   if (powerLvl == 1) {
@@ -110,79 +108,22 @@ void colorAlternate(uint32_t c1, uint32_t c2) {
   }
 }
 
-// Slightly different, this makes the rainbow equally distributed throughout
-void rainbowCycle(uint8_t wait) {
-  uint16_t i, j;
-
-  for(j=0; j<256*5; j++) { // 5 cycles of all colors on wheel
-    for(i=0; i< strip.numPixels(); i++) {
-      strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
-    }
-    strip.show();
-    delay(wait);
-  }
-}
-
-//Theatre-style crawling lights with rainbow effect
-void theaterChaseRainbow(uint8_t wait) {
-  for (int j=0; j < 256; j++) {     // cycle all 256 colors in the wheel
-    for (int q=0; q < 3; q++) {
-      for (uint16_t i=0; i < strip.numPixels(); i=i+3) {
-        strip.setPixelColor(i+q, Wheel( (i+j) % 255));    //turn every third pixel on
-      }
-      strip.show();
-
-      delay(wait);
-
-      for (uint16_t i=0; i < strip.numPixels(); i=i+3) {
-        strip.setPixelColor(i+q, 0);        //turn every third pixel off
-      }
-    }
-  }
-}
-
 void randomized(uint8_t r, uint8_t g, uint8_t b, uint8_t range) {
   for (uint8_t i = 0; i <= strip.numPixels(); i++) {
     uint8_t _r = 0;
     uint8_t _g = 0;
     uint8_t _b = 0;
-    //if (r != 0) {
     _r = min(max(0, random(r - range, r + range)), 255);
-    //}
-    //if (g != 0) {
     _g = min(max(0, random(g - range, g + range)), 255);
-    //}
-    //if (b != 0) {
     _b = min(max(0, random(g - range, g + range)), 255);
-    //}
     strip.setPixelColor(i, strip.Color(_r, _g, _b));
-    //strip.setBrightness(min(max(0, random(brightness - range, brightness + range)), 255));
   }
   strip.show();
 }
 
 uint8_t state = 0;
-uint8_t mode = 1;
 uint8_t analog = 1;
 unsigned long duration = 0;
-// solder wire to arduino port A2!
-
-void check_digital() {
-
-  duration = pulseIn(2, HIGH);
-  Serial.println(duration);
-  if (int(duration) <= 25 && int(duration) >= 15) {
-    state = 1;
-  } else if (int(duration) <= 50 && int(duration) >= 40) {
-    state = 2;
-  } else if (int(duration) <= 100 && int(duration) >= 90) {
-    state = 3;
-  } else if (int(duration) <= 200 && int(duration) >= 190) {
-    state = 4;
-  } else {
-    state = 0;
-  }
-}
 
 void check_analog() {
   uint16_t value = analogRead(2);
@@ -209,106 +150,26 @@ void check_analog() {
 }
 
 
-
 void loop() {
 
+  check_analog();
 
-  // state setting
-  if (analog == 0) {
-    check_digital();
-  } else {
-    check_analog();
+  switch (state) {
+    case 0:  { colorAlternate(green, off); break; }
+    case 1:  { colorAlternate(red, off); break; }
+    case 2:  { colorAlternate(blue, off); break; }
+    case 3:  { colorAlternate(yellow, off); break; }
+    case 4:  { colorBlink(green, off); break; }
+    case 5:  { colorBlink(red, off); break; }
+    case 6:  { colorBlink(blue, off); break; }
+    case 7:  { colorBlink(yellow, off); break; }
+    case 8:  { colorSolid(green); break; }
+    case 9:  { colorSolid(red); break; }
+    case 10: { colorSolid(blue); break; }
+    case 11: { colorSolid(yellow); break; }
+    case 12: { colorAlternate(blue, green); break; }
+    case 13: { colorAlternate(blue, red); break; }
+    case 14: { colorAlternate(green, red); break; }
+    case 15: { randomized(-5, 250, 0, 5); }
   }
-
-  switch (mode) {
-    case 0: {
-      // colorSolid(off, 0);
-      if (state == 1) {
-        strip.setPixelColor(min(int(duration), strip.numPixels() - 1), off);
-      }
-      duration = pulseIn(2, HIGH);
-      Serial.println(duration);
-      strip.setPixelColor(min(int(duration), strip.numPixels() - 1), green);
-      strip.show();
-      break;
-    }
-    case 1: {
-      switch (state) {
-        case 0:  { colorAlternate(green, off); break; }
-        case 1:  { colorAlternate(red, off); break; }
-        case 2:  { colorAlternate(blue, off); break; }
-        case 3:  { colorAlternate(yellow, off); break; }
-        case 4:  { colorBlink(green, off); break; }
-        case 5:  { colorBlink(red, off); break; }
-        case 6:  { colorBlink(blue, off); break; }
-        case 7:  { colorBlink(yellow, off); break; }
-        case 8:  { colorSolid(green); break; }
-        case 9:  { colorSolid(red); break; }
-        case 10: { colorSolid(blue); break; }
-        case 11: { colorSolid(yellow); break; }
-        case 12: { colorAlternate(blue, green); break; }
-        case 13: { colorAlternate(blue, red); break; }
-        case 14: { colorAlternate(green, red); break; }
-        case 15: { randomized(-5, 250, 0, 5); }
-      }
-    }
-  }
-}
-
-// Fill the dots one after the other with a color
-void colorWipe(uint32_t c, uint8_t wait) {
-  for(uint16_t i=0; i<strip.numPixels(); i++) {
-    strip.setPixelColor(i, c);
-    strip.show();
-    delay(wait);
-  }
-}
-
-void rainbow(uint8_t wait) {
-  uint16_t i, j;
-
-  for(j=0; j<256; j++) {
-    for(i=0; i<strip.numPixels(); i++) {
-      strip.setPixelColor(i, Wheel((i+j) & 255));
-    }
-    strip.show();
-    delay(wait);
-  }
-}
-
-
-
-//Theatre-style crawling lights.
-void theaterChase(uint32_t c, uint8_t wait) {
-  for (int j=0; j<10; j++) {  //do 10 cycles of chasing
-    for (int q=0; q < 3; q++) {
-      for (uint16_t i=0; i < strip.numPixels(); i=i+3) {
-        strip.setPixelColor(i+q, c);    //turn every third pixel on
-      }
-      strip.show();
-
-      delay(wait);
-
-      for (uint16_t i=0; i < strip.numPixels(); i=i+3) {
-        strip.setPixelColor(i+q, 0);        //turn every third pixel off
-      }
-    }
-  }
-}
-
-
-
-// Input a value 0 to 255 to get a color value.
-// The colours are a transition r - g - b - back to r.
-uint32_t Wheel(byte WheelPos) {
-  WheelPos = 255 - WheelPos;
-  if(WheelPos < 85) {
-    return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-  }
-  if(WheelPos < 170) {
-    WheelPos -= 85;
-    return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
-  WheelPos -= 170;
-  return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
