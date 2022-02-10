@@ -11,8 +11,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -42,6 +40,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
       ColorSensor.ColorSensor_robotPeriodic();
       CameraServer.startAutomaticCapture();
+      ProtoMotors.Proto_RobotPeriodic();
 
   }
   
@@ -71,6 +70,7 @@ public class Robot extends TimedRobot {
     m_myRobot = new DifferentialDrive(m_leftMotor1, m_rightMotor1);
 
     ColorSensor.ColorSensor_robotInit();
+    ProtoMotors.Proto_RobotInit();
 
 
   }
@@ -82,5 +82,6 @@ public class Robot extends TimedRobot {
     m_myRobot.arcadeDrive(m_leftStick, -(m_rightStick / 2));
     
     AxisCamera.cameraStuff();
+    ProtoMotors.Proto_TeleopPeriodic();
   }
 }

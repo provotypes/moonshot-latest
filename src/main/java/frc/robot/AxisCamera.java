@@ -17,19 +17,19 @@ public class AxisCamera {
   
   public static void cameraStuff() {
   
-      if (m_controller.getPOV(0) == 1) { // up button
+      if (m_controller.getPOV() == 0) { // up button
         axisCameraY = 0;
         axisCameraZ = 0;
       }
-      else if (m_controller.getPOV(90) == 1) { // right button 
+      else if (m_controller.getPOV() == 90) { // right button 
         axisCameraY = 0;
         axisCameraZ = 1;
       }
-      else if (m_controller.getPOV(180) == 1) { // down button
+      else if (m_controller.getPOV() == 180) { // down button
         axisCameraY = 0.5;
         axisCameraZ = 0.5;
       }
-      else if (m_controller.getPOV(270) == 1) { // left button
+      else if (m_controller.getPOV() == 270) { // left button
         axisCameraY = 1;
         axisCameraZ = 0;
       }
