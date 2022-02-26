@@ -29,8 +29,8 @@ public class Robot extends TimedRobot {
   private final XboxController m_controller = new XboxController(0);
 
   private static final int leftDeviceID1 = 1; 
-  private static final int leftDeviceID2 = 2; 
-  private static final int rightDeviceID1 = 3;
+  private static final int leftDeviceID2 = 3; 
+  private static final int rightDeviceID1 = 2;
   private static final int rightDeviceID2 = 4;
   private CANSparkMax m_leftMotor1;
   private CANSparkMax m_leftMotor2;
@@ -48,6 +48,8 @@ public class Robot extends TimedRobot {
   private final Color kRedTarget =  new Color(0.561, 0.232, 0.114);
   private final Color kGreenTarget = new Color(0.197, 0.561, 0.240);
   private final Color kYellowTarget = new Color(0.361, 0.524, 0.113);
+  private final Color kBlueTarget1 = new Color(0, 0, 1);
+  private final Color kRedTarget1 = new Color(1, 0, 0);
 
   private final Servo swivelServo = new Servo(1);
   private final Servo tiltServo = new Servo(0);
@@ -55,7 +57,6 @@ public class Robot extends TimedRobot {
   private double axisCameraZ = 1;
   private final AnalogOutput lightStrip = new AnalogOutput(getChannelFromPin(PinType.AnalogOut, 0));
   private double voltage = 0;
-  private int timer = 0;
 
   
   @Override
@@ -66,9 +67,9 @@ public class Robot extends TimedRobot {
       String colorString1;
       ColorMatchResult match1 = m_colorMatcher.matchClosestColor(detectedColor1);
 
-      if (match1.color == kBlueTarget) {colorString1 = "Blue";}
+      if (match1.color == kBlueTarget || match1.color == kBlueTarget1) {colorString1 = "Blue";}
       else if (match1.color == kGreenTarget) {colorString1 = "Green";}
-      else if (match1.color == kRedTarget) {colorString1 = "Red";}
+      else if (match1.color == kRedTarget || match1.color == kRedTarget1) {colorString1 = "Red";}
       else if (match1.color == kYellowTarget) {colorString1 = "Yellow";}
       else {colorString1 = "Unknown";}
 
@@ -92,9 +93,9 @@ public class Robot extends TimedRobot {
       String colorString;
       ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
-      if (match.color == kBlueTarget) {colorString = "Blue";}
+      if (match.color == kBlueTarget || match.color == kBlueTarget1) {colorString = "Blue";}
       else if (match.color == kGreenTarget) {colorString = "Green";}
-      else if (match.color == kRedTarget) {colorString = "Red";}
+      else if (match.color == kRedTarget || match.color == kRedTarget1) {colorString = "Red";}
       else if (match.color == kYellowTarget) {colorString = "Yellow";}
       else {colorString = "Unknown";}
 
@@ -108,6 +109,23 @@ public class Robot extends TimedRobot {
       int proximity = m_colorSensor.getProximity();
 
       SmartDashboard.putNumber("Proximity", proximity);
+
+
+
+      if (colorString == "Blue" || colorString1 == "Blue") {
+        voltage = .8;
+      }
+      else if (colorString == "Red" || colorString1 == "Red") {
+        voltage = .7;
+      }
+      else if (colorString == "Green" || colorString1 == "Green") {
+        voltage = .5;
+      }
+      else {
+        voltage = 2;
+      }
+
+    lightStrip.setVoltage(voltage);
 
   }
   
@@ -157,6 +175,8 @@ public class Robot extends TimedRobot {
     m_colorMatcher.addColorMatch(kRedTarget);
     m_colorMatcher.addColorMatch(kGreenTarget);
     m_colorMatcher.addColorMatch(kYellowTarget);
+    m_colorMatcher.addColorMatch(kRedTarget1);
+    m_colorMatcher.addColorMatch(kBlueTarget1);
 
     CameraServer.startAutomaticCapture();
 
@@ -197,16 +217,6 @@ public class Robot extends TimedRobot {
       //tiltServo.set(axisCameraY);
     };
     //lightStrip.setVoltage((m_controller.getLeftTriggerAxis() * 5));
-    lightStrip.setVoltage(voltage);
-    // if (timer <= 30) {
-    //   timer += 1;
-    // } else {
-    //   timer = 0;
-    //   if (voltage < 5) {
-    //     voltage += .5;} else {
-    //       voltage = 0;
-    //     }
-    // }
 
     
   };
