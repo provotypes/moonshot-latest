@@ -32,8 +32,8 @@ public class Robot extends TimedRobot {
   private final XboxController m_controller = new XboxController(0);
 
   private static final int leftDeviceID1 = 1; 
-  private static final int leftDeviceID2 = 2; 
-  private static final int rightDeviceID1 = 3;
+  private static final int leftDeviceID2 = 3; 
+  private static final int rightDeviceID1 = 2;
   private static final int rightDeviceID2 = 4;
   private static final int protoID5 = 5;
   private static final int protoID6 = 6;
@@ -146,6 +146,8 @@ else{
       SmartDashboard.putNumber("IR", IR);
       SmartDashboard.putNumber("Confidence", match.confidence);
       SmartDashboard.putString("Detected Color", colorString);
+      // SmartDashboard.putNumber("Hex Color", detectedColor.blue);
+      SmartDashboard.putString("Hex Color", m_colorSensor.getRawColor().toString());
 
       int proximity = m_colorSensor.getProximity();
 
@@ -217,9 +219,9 @@ else{
 
   @Override
   public void teleopPeriodic() {
-    m_leftStick = m_controller.getRawAxis(1);
-    m_rightStick = m_controller.getRawAxis(4);
-    m_myRobot.arcadeDrive((m_rightStick) / 3, -m_leftStick);
+    m_leftStick = m_controller.getLeftY();
+    m_rightStick = m_controller.getRightX();
+    m_myRobot.arcadeDrive(m_leftStick, -(m_rightStick / 2));
 
 
 
@@ -253,10 +255,6 @@ else{
         m_protoMotor5.set(0);
       };
 
-
- 
-
-
       if (m_controller.getYButton())
       {
         m_protoMotor7.set(.5);
@@ -265,12 +263,13 @@ else{
         m_protoMotor7.set(0);
       };
 
-
       if (m_controller.getAButton()){
         m_protoMotor8.set(.5);
+        m_protoMotor6.set(.5);
       }
       else{
         m_protoMotor8.set(0);
+        m_protoMotor6.set(0);
       };
 
     
