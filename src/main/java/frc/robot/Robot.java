@@ -11,6 +11,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,9 +29,9 @@ public class Robot extends TimedRobot {
   private Double m_rightStick;
   private final XboxController m_controller = new XboxController(0);
 
-  private static final int leftDeviceID1 = 1; 
+  private static final int leftDeviceID1 = 3; 
   private static final int leftDeviceID2 = 2; 
-  private static final int rightDeviceID1 = 3;
+  private static final int rightDeviceID1 = 1;
   private static final int rightDeviceID2 = 4;
   private CANSparkMax m_leftMotor1;
   private CANSparkMax m_leftMotor2;
@@ -52,6 +53,7 @@ public class Robot extends TimedRobot {
   private double axisCameraY = 1;
   private double axisCameraZ = 1;
   private double rampRate = .3;
+  private final Timer m_timer = new Timer();
 
   
   @Override
@@ -170,5 +172,20 @@ public class Robot extends TimedRobot {
       };
     
 
+  }
+
+  @Override
+  public void autonomousInit() {
+    m_timer.reset();
+    m_timer.start();
+  }
+
+  @Override
+  public void autonomousPeriodic() {
+    if (m_timer.get() < 2.0) {
+      m_myRobot.arcadeDrive(.5, 0);
+    } else {
+      m_myRobot.stopMotor();
+    }
   }
 }
