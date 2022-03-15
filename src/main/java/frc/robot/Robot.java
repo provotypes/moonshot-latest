@@ -161,6 +161,10 @@ public class Robot extends TimedRobot {
     m_rightMotor2.restoreFactoryDefaults();
     
     
+    //m_leftMotor1.setInverted(true);
+    //m_leftMotor2.setInverted(true);
+
+
     m_rightMotor2.follow(m_rightMotor1);
     m_leftMotor2.follow(m_leftMotor1);
 
@@ -194,10 +198,10 @@ public class Robot extends TimedRobot {
         rotateToAngleRate = 0; // This value will be updated by the PID Controller
         turnControllerEnabled = true;
       }
-      rotateToAngleRate = (MathUtil.clamp(turnController.calculate(gyro.getAngle()), -1.0, 1.0) / 2);
+      rotateToAngleRate = (MathUtil.clamp(turnController.calculate(gyro.getAngle()), -1.0, 1.0));
       double leftStickValue = rotateToAngleRate;
       double rightStickValue = rotateToAngleRate;
-      m_myRobot.tankDrive(leftStickValue, rightStickValue);
+      m_myRobot.arcadeDrive(leftStickValue, rightStickValue);
     } else if (m_controller.getRightBumper()) {
       /*
        * "Zero" the yaw (whatever direction the sensor is pointing now will become the
@@ -232,7 +236,7 @@ public class Robot extends TimedRobot {
     
       m_leftStick = m_controller.getRawAxis(1);
       m_rightStick = m_controller.getRawAxis(4);
-      m_myRobot.arcadeDrive((m_rightStick) / 3, -m_leftStick);}
+      m_myRobot.tankDrive(m_leftStick, m_rightStick);}
 
 /*      swivelServo.set((m_rightStick.getY() + 1) / 2);
       tiltServo.set((m_rightStick.getZ() + 1) / 2);
